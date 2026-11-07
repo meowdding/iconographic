@@ -49,6 +49,10 @@
           "@value": "Text Formatting",
           "desc": "Settings for formatting text and stats."
         },
+        "separators": {
+          "@value": "Better Separators",
+          "desc": "Converts Hypixel's separators into custom textures."
+        },
         "shinyHolographic": {
           "@value": "Holographic Shiny Name",
           "desc": "Modifies Shiny Items name to be holographic."

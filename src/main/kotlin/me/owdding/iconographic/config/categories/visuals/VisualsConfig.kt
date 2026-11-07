@@ -17,7 +17,10 @@ object VisualsConfig : CategoryKt("visuals"), AutoTranslated {
     val replaceNoRarityColor by autoBoolean(false)
     val customNoRarityColor by autoColor(0xFFFFFF)
 
+
+
     init { autoSeparator("text_formatting") }
+    val separators by autoBoolean(true)
     val shinyHolographic by autoBoolean(true)
     val alignedStats by autoBoolean(true)
     val colorStatName by autoBoolean(false)
