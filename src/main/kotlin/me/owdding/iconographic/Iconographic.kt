@@ -125,37 +125,13 @@ object Iconographic : ClientModInitializer, MeowddingLogger by MeowddingLogger.a
         override fun getWidth(font: Font): Int = mainWidth + if (sideWidth > 0) 22 + sideWidth else 0
     }
 
-    @JvmStatic
-    fun processTooltipComponents(
-        item: ItemStack,
-        font: Font,
-        lines: MutableList<ClientTooltipComponent>,
-    ) {
-        val tooltipInfo = lines.toInformation()
-        val tooltip = CustomTooltip.update(item, tooltipInfo)
-
-        currentTooltipRarityColor = ColorUtils.getColorFromRarity(tooltip.rarity)
-
-        val entries = tooltip.entries.toMutableList()
-        entries.addFirst(TooltipHeader(tooltip))
-
-        var totalWidth = 0
-        var maxSideWidth = 0
-
-        for (line in entries) {
-            if (line is SideTooltipLine) {
-                maxSideWidth = max(line.getSideWidth(font), maxSideWidth)
-            }
-            totalWidth = max(line.getWidth(font), totalWidth)
-        }
-
-        lines.clear()
+    fun List<TooltipLine>.asTooltipComponents(totalWidth: Int, maxSideWidth: Int): List<ClientTooltipComponent> {
+        val lines = mutableListOf<ClientTooltipComponent>()
 
         var currentSideStart: IconographicTooltipComponent? = null
         var currentSideHeight = 0
 
-
-        for (line in entries) {
+        for (line in this) {
             when (line) {
                 is ExtractableTooltipLine -> {
                     val component = IconographicTooltipComponent(line)
@@ -193,6 +169,38 @@ object Iconographic : ClientModInitializer, MeowddingLogger by MeowddingLogger.a
         }
 
         currentSideStart?.sideBlockHeight = currentSideHeight
+
+        return lines
+    }
+
+    @JvmStatic
+    fun processTooltipComponents(
+        item: ItemStack,
+        font: Font,
+        lines: MutableList<ClientTooltipComponent>,
+    ) {
+        val tooltipInfo = lines.toInformation()
+        val tooltip = CustomTooltip.update(item, tooltipInfo)
+
+        currentTooltipRarityColor = ColorUtils.getColorFromRarity(tooltip.rarity)
+
+        val entries = tooltip.entries.toMutableList()
+        entries.addFirst(TooltipHeader(tooltip))
+
+        var totalWidth = 0
+        var maxSideWidth = 0
+
+        for (line in entries) {
+            if (line is SideTooltipLine) {
+                maxSideWidth = max(line.getSideWidth(font), maxSideWidth)
+            }
+            totalWidth = max(line.getWidth(font), totalWidth)
+        }
+
+        lines.clear()
+
+        lines.addAll(entries.asTooltipComponents(totalWidth, maxSideWidth))
+
         lines.add(TooltipWidthLine(totalWidth, maxSideWidth))
     }
 

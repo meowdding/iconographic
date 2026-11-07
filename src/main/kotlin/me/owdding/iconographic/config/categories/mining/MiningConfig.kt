@@ -10,7 +10,7 @@ object MiningConfig : CategoryKt("mining"), AutoTranslated {
 
     init { autoSeparator("drills") }
     val drillFuel by autoBoolean(true)
-    val drillComponents by autoBoolean(true)
+    var drillComponents by autoBoolean(true)
 
     init { autoSeparator("gemstones") }
     val gemstoneSlots by autoBoolean(true)

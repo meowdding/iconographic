@@ -10,19 +10,19 @@ object VisualsConfig : CategoryKt("visuals"), AutoTranslated {
     override val name: TranslatableValue = Translated(translationBase)
 
     init { autoSeparator("general") }
-    val spinny by autoBoolean(false)
-    val vanillaBackground by autoBoolean(true)
-    val forceDefaultVanillaBackground by autoBoolean(false)
-    val skyBlockColor by autoBoolean(true)
-    val replaceNoRarityColor by autoBoolean(false)
-    val customNoRarityColor by autoColor(0xFFFFFF)
+    var spinny by autoBoolean(false)
+    var vanillaBackground by autoBoolean(true)
+    var forceDefaultVanillaBackground by autoBoolean(false)
+    var skyBlockColor by autoBoolean(true)
+    var replaceNoRarityColor by autoBoolean(false)
+    var customNoRarityColor by autoColor(0xFFFFFF)
 
 
 
     init { autoSeparator("text_formatting") }
-    val separators by autoBoolean(true)
-    val shinyHolographic by autoBoolean(true)
-    val alignedStats by autoBoolean(true)
-    val colorStatName by autoBoolean(false)
-    val extraStatsDisplay by autoEnum(ExtraStatDisplay.NORMAL)
+    var separators by autoBoolean(true)
+    var shinyHolographic by autoBoolean(true)
+    var alignedStats by autoBoolean(true)
+    var colorStatName by autoBoolean(false)
+    var extraStatsDisplay by autoEnum(ExtraStatDisplay.NORMAL)
 }
