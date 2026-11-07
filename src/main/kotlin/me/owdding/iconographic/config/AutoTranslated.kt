@@ -14,12 +14,12 @@ import com.teamresourceful.resourcefulconfigkt.api.builders.SeparatorBuilder
 interface AutoTranslated {
     val translationBase: String
 
-    context(entryBuilder: EntriesBuilder)
+    fun createKey(id: String) = listOf(translationBase, id).filter { it.isNotEmpty() }.joinToString(".")
+
     fun TypeBuilder.makeTranslations() {
-        this.translation = listOf(translationBase, id).filter { it.isNotEmpty() }.joinToString(".")
+        this.translation = createKey(id)
     }
 
-    context(entryBuilder: EntriesBuilder)
     fun <Type : TypeBuilder> wrap(builder: (Type) -> Unit): (Type) -> Unit = {
         it.makeTranslations()
         builder(it)

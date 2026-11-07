@@ -1,10 +1,7 @@
 package me.owdding.iconographic.features
 
-import me.owdding.iconographic.ComponentLike
+import me.owdding.iconographic.*
 import me.owdding.iconographic.Iconographic.asTooltipComponents
-import me.owdding.iconographic.Tooltip
-import me.owdding.iconographic.TooltipInformation
-import me.owdding.iconographic.TooltipLine
 import me.owdding.iconographic.config.previews.ConfigPreviewItem
 import me.owdding.iconographic.config.previews.ConfigPreviewSection
 import me.owdding.iconographic.config.previews.Silly1
@@ -12,11 +9,19 @@ import me.owdding.iconographic.render.TooltipHeader
 import me.owdding.iconographic.system.CustomTooltip
 import me.owdding.iconographic.system.TooltipTag
 import me.owdding.iconographic.utils.ExtraDisplays
+import me.owdding.lib.builder.LayoutBuilder
 import me.owdding.lib.builder.LayoutFactory
+import me.owdding.lib.builder.VerticalLayoutBuilder
+import me.owdding.lib.displays.Displays
+import me.owdding.lib.displays.asWidget
+import me.owdding.lib.layouts.withPadding
 import net.minecraft.client.gui.layouts.FrameLayout
 import net.minecraft.client.gui.layouts.Layout
 import net.minecraft.client.gui.layouts.LayoutElement
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
+import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil
+import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.CommonComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
@@ -27,6 +32,8 @@ object ConfigPreviewScreen : Screen(CommonComponents.EMPTY) {
 
     var previewItem: ConfigPreviewItem = Silly1
 
+    override fun isPauseScreen(): Boolean = false
+
     override fun init() {
         val item = previewItem.item ?: return LayoutFactory.frame {
             string("You need to be in a world to use the preview config!")
@@ -36,17 +43,24 @@ object ConfigPreviewScreen : Screen(CommonComponents.EMPTY) {
 
         var displayItem: ItemStack? = null
         var name: Component? = null
-        val leftTags: MutableList<TooltipTag> = mutableListOf()
-        val rightTags: MutableList<TooltipTag> = mutableListOf()
+        val leftTags: MutableSet<TooltipTag> = mutableSetOf()
+        val rightTags: MutableSet<TooltipTag> = mutableSetOf()
         var topRightIcon: Identifier? = null
         var rarity: SkyBlockRarity? = null
         var isRarityUpgraded = false
-        val futures = mutableListOf<(maxWidth: Int, maxSideWidth: Int, totalHeight: Int) -> Layout>()
+        val futures = mutableListOf<(widgets: PreviewWidgets) -> Unit>()
 
-        preview.sections.forEach {
-            val [tooltip, future] = section(item, it)
+        var maxWidth = 0
+        var maxSideWidth = 0
+        var height = 0
+        preview.sections.forEachIndexed { index, section ->
+            val [tooltip, future] = section(item, section, index)
 
-            futures.add(future )
+            futures.add(future)
+
+            maxWidth = maxOf(maxWidth, tooltip.entries.maxOfOrNull { it.getWidth(font) } ?: 0)
+            maxSideWidth = maxOf(maxSideWidth, tooltip.entries.filterIsInstance<SideTooltipLine>().maxOfOrNull { it.getSideWidth(font) } ?: 0)
+            height += tooltip.entries.sumOf { it.getHeight(font) }
 
             displayItem = displayItem ?: tooltip.item
             name = name ?: tooltip.name
@@ -57,32 +71,105 @@ object ConfigPreviewScreen : Screen(CommonComponents.EMPTY) {
             isRarityUpgraded = isRarityUpgraded || tooltip.isRarityUpgraded
         }
 
-        val header = TooltipHeader(displayItem ?: item, name ?: item.hoverName, leftTags, rightTags, topRightIcon, rarity)
+        val header = TooltipHeader(displayItem ?: item, name ?: item.hoverName, leftTags.toList(), rightTags.toList(), topRightIcon, rarity)
 
+        height += header.getHeight(font)
+        maxWidth = maxOf(maxWidth, header.getWidth(font))
+
+        val tooltipStyle = displayItem?.get(DataComponents.TOOLTIP_STYLE)
+        val widgets = PreviewWidgets(
+            maxWidth = maxWidth,
+            maxSideWidth = maxSideWidth,
+            totalHeight = height,
+        )
+
+        widgets.optionAndLine(
+            LayoutFactory.vertical {
+                preview.globalConfigs.forEach {
+                    it.visualize()
+                }
+            },
+            LayoutFactory.vertical {
+                widgets.asTooltipComponentDisplays(listOf(header)).forEach(::display)
+            }
+        )
+        futures.forEach { section ->
+            section(widgets)
+        }
+
+        val options = widgets.options.build(2)
+        val lines = widgets.lines.build(2)
+
+        LayoutFactory.horizontal {
+            widget(options.withPadding(12))
+            spacer(5)
+            widget(lines.withPadding(12).withTexturedBackground(TooltipRenderUtil.getFrameSprite(tooltipStyle)).withTexturedBackground(TooltipRenderUtil.getBackgroundSprite(tooltipStyle)))
+        }.center().apply { arrangeElements() }.apply()
     }
 
-    fun section(item: ItemStack, section: ConfigPreviewSection): Pair<Tooltip, (maxWidth: Int, maxSideWidth: Int, totalHeight: Int) -> Layout> {
-        val info = TooltipInformation(null, section.lore.map(::ComponentLike))
-        val tooltip = CustomTooltip.update(item, info)
-
-        return tooltip to { maxWidth, maxSideWidth, totalHeight: Int ->
-            LayoutFactory.horizontal {
-                vertical {
-                    spacer(width = width / 2)
-                    section.options.forEach {
-                        it.visualize()
-                    }
-                }
-
-                spacer(5)
-
-                info.entries.toMutableList().apply { addFirst(ComponentLike(CommonComponents.EMPTY)) }.asTooltipComponents(maxWidth, maxSideWidth).forEach {
-                    display(ExtraDisplays.clientTooltipComponent(it, maxWidth, totalHeight))
-                }
-            }
+    fun LayoutElement.withTexturedBackground(location: Identifier, width: Int = this.width, height: Int = this.height): LayoutElement = LayoutFactory.frame {
+        val element = this@withTexturedBackground
+        widget(Displays.sprite(location, width, height).asWidget()) {
+            alignHorizontallyCenter()
+            alignVerticallyMiddle()
+        }
+        widget(element) {
+            alignHorizontallyCenter()
+            alignVerticallyMiddle()
         }
     }
 
-    fun <Element : LayoutElement> Element.center() = apply { FrameLayout.centerInRectangle(this, 0, 0, width, height) }
+
+    data class PreviewWidgets(
+        val options: LayoutBuilder = VerticalLayoutBuilder(),
+        val lines: LayoutBuilder = VerticalLayoutBuilder(),
+        val maxWidth: Int,
+        val maxSideWidth: Int,
+        val totalHeight: Int,
+    ) {
+        fun optionAndLine(options: LayoutElement, lines: LayoutElement) {
+            val height = maxOf(options.height, lines.height)
+            option(options, height)
+            line(lines, height)
+        }
+
+        fun option(widget: LayoutElement, height: Int) = options.widget(LayoutFactory.frame(height = height) {
+            spacer(height = height)
+            //display(Displays.outline({ 0xFFFFFFFFu }, Displays.empty(widget.width, height)))
+            widget(widget)
+        })
+
+        fun line(widget: LayoutElement, height: Int) = lines.widget(LayoutFactory.frame(height = height) {
+            spacer(height = height)
+            //display(Displays.outline({ 0xFFFFFFFFu }, Displays.empty(widget.width, height)))
+            widget(widget)
+        })
+
+        fun asTooltipComponentDisplays(list: List<TooltipLine>) = asTooltipComponents(list).map(::asDisplay)
+        fun asTooltipComponents(list: List<TooltipLine>) = list.asTooltipComponents(maxWidth, maxSideWidth)
+        fun asDisplay(line: ClientTooltipComponent) = ExtraDisplays.clientTooltipComponent(line, maxWidth, totalHeight)
+    }
+
+    fun section(item: ItemStack, section: ConfigPreviewSection, index: Int): Pair<Tooltip, (widgets: PreviewWidgets) -> Unit> {
+        val info = TooltipInformation(null, section.lore.toMutableList().apply { if (index > 0) addFirst(CommonComponents.EMPTY) }.map(::ComponentLike))
+        val tooltip = CustomTooltip.update(item, info)
+
+        return tooltip to { widgets ->
+            if (section.options.isEmpty() && tooltip.entries.isEmpty()) return@to
+
+            widgets.optionAndLine(
+                LayoutFactory.vertical {
+                    section.options.forEach {
+                        it.visualize()
+                    }
+                },
+                LayoutFactory.vertical {
+                    widgets.asTooltipComponentDisplays(tooltip.entries).forEach(::display)
+                },
+            )
+        }
+    }
+
+    fun <Element : LayoutElement> Element.center() = apply { FrameLayout.centerInRectangle(this, 0, 0, this@ConfigPreviewScreen.width, this@ConfigPreviewScreen.height) }
     fun Layout.apply() = this.visitWidgets(::addRenderableWidget)
 }

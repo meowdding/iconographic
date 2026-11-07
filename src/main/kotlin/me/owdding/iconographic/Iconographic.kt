@@ -5,6 +5,7 @@ import com.teamresourceful.resourcefulconfig.api.loader.Configurator
 import me.owdding.iconographic.TooltipInformation.Companion.toInformation
 import me.owdding.iconographic.api.ImcHandler
 import me.owdding.iconographic.config.Config
+import me.owdding.iconographic.features.ConfigPreviewScreen
 import me.owdding.iconographic.generated.BuildInfo
 import me.owdding.iconographic.generated.IconographicApiDebug
 import me.owdding.iconographic.generated.IconographicModules
@@ -114,6 +115,12 @@ object Iconographic : ClientModInitializer, MeowddingLogger by MeowddingLogger.a
         }
         event.registerWithCallback("version") {
             Text.of("Version: $VERSION").withColor(TextColor.GRAY).sendWithPrefix()
+        }
+
+        event.registerWithCallback("preview") {
+            McClient.setScreenAsync {
+                ConfigPreviewScreen
+            }
         }
     }
 

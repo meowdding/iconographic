@@ -3,6 +3,8 @@ package me.owdding.iconographic.config.previews
 import me.owdding.iconographic.config.categories.mining.MiningConfig
 import me.owdding.iconographic.config.categories.visuals.VisualsConfig
 import me.owdding.ktmodules.Module
+import net.minecraft.core.component.DataComponents
+import net.minecraft.resources.Identifier
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import tech.thatgravyboat.skyblockapi.utils.builders.ItemBuilder
@@ -10,12 +12,17 @@ import tech.thatgravyboat.skyblockapi.utils.lazy.registryBoundLazy
 import tech.thatgravyboat.skyblockapi.utils.text.Text
 import tech.thatgravyboat.skyblockapi.utils.text.TextBuilder.append
 import tech.thatgravyboat.skyblockapi.utils.text.TextColor
+import tech.thatgravyboat.skyblockapi.utils.text.TextStyle.bold
 import tech.thatgravyboat.skyblockapi.utils.text.TextStyle.color
+import tech.thatgravyboat.skyblockapi.utils.text.TextStyle.obfuscated
 
 @Module
 object Silly1 : ConfigPreviewItem() {
     override val item: ItemStack? by registryBoundLazy {
-        ItemBuilder(Items.PRISMARINE_SHARD) {
+        ItemBuilder(Items.DIAMOND_PICKAXE) {
+
+            DataComponents.ITEM_MODEL(Identifier.parse("hypixel_skyblock:item/uncategorized/divans_drill"))
+            DataComponents.TOOLTIP_STYLE(Identifier.parse("hypixel_skyblock:supreme"))
             customData {
                 "rarity_upgrades"(1)
                 "polarvoid"(5)
@@ -64,15 +71,12 @@ object Silly1 : ConfigPreviewItem() {
     }
 
     override fun OptionsBuilder.globalSettings() {
-        toggle(MiningConfig::drillComponents)
+        toggle(MiningConfig, MiningConfig::drillComponents)
+        toggle(VisualsConfig, VisualsConfig::spinny)
     }
 
     override fun PreviewBuilder.buildPreview() {
         section(Text.of("Header")) {
-            options {
-                toggle(VisualsConfig::spinny)
-            }
-
             lore {
                 add("Heated Divan's Drill", TextColor.AQUA)
                 add("Breaking Power 10", TextColor.DARK_GRAY)
@@ -81,8 +85,8 @@ object Silly1 : ConfigPreviewItem() {
 
         section("Stats") {
             options {
-                toggle(VisualsConfig::alignedStats)
-                toggle(VisualsConfig::colorStatName)
+                toggle(VisualsConfig, VisualsConfig::alignedStats)
+                toggle(VisualsConfig, VisualsConfig::colorStatName)
             }
 
             lore {
@@ -92,21 +96,21 @@ object Silly1 : ConfigPreviewItem() {
                 }
                 add("Mining Speed: ") {
                     color = TextColor.GRAY
-                    append("+3,260", TextColor.GOLD)
-                    append("[+500]", TextColor.GOLD)
-                    append("[+50]", TextColor.BLUE)
-                    append("(+70)", TextColor.BLUE)
+                    append("+3,260 ", TextColor.GOLD)
+                    append("[+500] ", TextColor.GOLD)
+                    append("[+50] ", TextColor.BLUE)
+                    append("(+70) ", TextColor.BLUE)
                     append("(+240)", TextColor.LIGHT_PURPLE)
                 }
                 add("Pristine: ") {
                     color = TextColor.GRAY
-                    append("+4.7", TextColor.DARK_PURPLE)
+                    append("+4.7 ", TextColor.DARK_PURPLE)
                     append("(+2.2)", TextColor.LIGHT_PURPLE)
                 }
                 add("Mining Fortune: ") {
                     color = TextColor.GRAY
-                    append("+445", TextColor.GOLD)
-                    append("[+5]", TextColor.BLUE)
+                    append("+445 ", TextColor.GOLD)
+                    append("[+5] ", TextColor.BLUE)
                     append("(+25)", TextColor.LIGHT_PURPLE)
                 }
                 add("Gemstone Fortune: ") {
@@ -117,6 +121,144 @@ object Silly1 : ConfigPreviewItem() {
                     color = TextColor.GRAY
                     append("+10", TextColor.DARK_AQUA)
                 }
+            }
+        }
+        section("Mrrp") {
+
+            lore {
+                add {
+                    append("Gemstones: ", TextColor.GRAY)
+                    append("[", TextColor.GOLD)
+                    append("", TextColor.GOLD)
+                    append("] ", TextColor.GOLD)
+                    append("[", TextColor.GOLD)
+                    append("", TextColor.GOLD)
+                    append("] ", TextColor.GOLD)
+                    append("[", TextColor.GOLD)
+                    append("", TextColor.GREEN)
+                    append("] ", TextColor.GOLD)
+                    append("[", TextColor.GOLD)
+                    append("", TextColor.GREEN)
+                    append("] ", TextColor.GOLD)
+                    append("[", TextColor.GOLD)
+                    append("✦", TextColor.YELLOW)
+                    append("]", TextColor.GOLD)
+                }
+
+                space()
+
+                add("Flowstate III") {
+                    color = TextColor.LIGHT_PURPLE
+                    bold = true
+                }
+
+                add("Compact X", TextColor.BLUE)
+
+                add("Efficiency X", TextColor.BLUE)
+
+                add("Experience IV", TextColor.BLUE)
+
+                add("Fortune IV", TextColor.BLUE)
+
+                add("Lapidary V", TextColor.BLUE)
+
+                add("Paleontologist V", TextColor.BLUE)
+
+                add("Prismatic V", TextColor.BLUE)
+
+                add("Smelting Touch I", TextColor.BLUE)
+
+                space()
+
+                add("Perfectly-Cut Fuel Tank", TextColor.GREEN)
+
+                add("100,000 Max Fuel Capacity", TextColor.DARK_GREEN)
+
+                add("-10% Pickaxe Ability Cooldown", TextColor.GREEN)
+
+                space()
+
+                add("Amber-Polished Drill Engine", TextColor.GREEN)
+
+                add("+600 Mining Speed", TextColor.GOLD)
+
+                add("+100 Mining Fortune", TextColor.GOLD)
+
+                space()
+
+                add("Blue Cheese Goblin Omelette Part", TextColor.GREEN)
+
+                add {
+                    append("Adds ", TextColor.GRAY)
+                    append("+1 Level ", TextColor.GREEN)
+                    append("to all of your unlocked ", TextColor.GRAY)
+                    append("Heart of", TextColor.DARK_PURPLE)
+                }
+
+                add {
+                    append("the Mountain ", TextColor.DARK_PURPLE)
+                    append("perks.", TextColor.GRAY)
+                }
+
+                space()
+
+                add {
+                    append("Fuel: ", TextColor.GRAY)
+                    append("52,704", TextColor.DARK_GREEN)
+                    append("/100k", TextColor.DARK_GRAY)
+                }
+
+                space()
+
+                add("Heated Bonus", TextColor.BLUE)
+
+                add {
+                    append("Grants ", TextColor.GRAY)
+                    append("+1 Mining Fortune ", TextColor.GOLD)
+                    append("and ", TextColor.GRAY)
+                    append("+4", TextColor.GOLD)
+                }
+
+                add {
+                    append("Mining Speed ", TextColor.GOLD)
+                    append("per ", TextColor.GRAY)
+                    append("1♨ Heat ", TextColor.RED)
+                    append("you have.", TextColor.GRAY)
+                }
+
+                space()
+
+                add {
+                    append("* ") {
+                        color = TextColor.DARK_GRAY
+                        bold = true
+                    }
+                    append("Co-op Soulbound ", TextColor.DARK_GRAY)
+                    append("*") {
+                        color = TextColor.DARK_GRAY
+                        bold = true
+                    }
+                }
+
+                add {
+                    append("a") {
+                        color = TextColor.AQUA
+                        bold = true
+                        obfuscated = true
+                    }
+                    append(" ")
+                    append("DIVINE DRILL ") {
+                        color = TextColor.AQUA
+                        bold = true
+                    }
+                    append("a") {
+                        color = TextColor.AQUA
+                        bold = true
+                        obfuscated = true
+                    }
+                }
+
+
             }
         }
     }

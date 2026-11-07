@@ -1,15 +1,27 @@
 package me.owdding.iconographic.config.previews
 
+import earth.terrarium.olympus.client.components.Widgets
+import earth.terrarium.olympus.client.components.renderers.WidgetRenderers
+import me.owdding.iconographic.config.AutoTranslated
 import me.owdding.lib.builder.LayoutBuilder
+import net.minecraft.client.gui.components.AbstractWidget
+import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.*
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.component.CustomData
+import tech.thatgravyboat.skyblockapi.helpers.McFont
+import tech.thatgravyboat.skyblockapi.helpers.McScreen
 import tech.thatgravyboat.skyblockapi.utils.builders.ItemBuilder
 import tech.thatgravyboat.skyblockapi.utils.builders.TooltipBuilder
 import tech.thatgravyboat.skyblockapi.utils.text.Text
+import tech.thatgravyboat.skyblockapi.utils.text.TextBuilder.append
+import tech.thatgravyboat.skyblockapi.utils.text.TextColor
+import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.width
+import tech.thatgravyboat.skyblockapi.utils.text.TextStyle.color
 import kotlin.reflect.KMutableProperty0
+import kotlin.reflect.KMutableProperty1
 
 @DslMarker
 annotation class PreviewDsl
@@ -20,6 +32,9 @@ abstract class ConfigPreviewItem {
     val preview: ConfigPreview = buildPreview()
 
     inline fun ItemBuilder.customData(init: CompoundTagBuilder.() -> Unit) = this.set(DataComponents.CUSTOM_DATA, CustomData.of(CompoundTagBuilder(init)))
+
+    context(builder: ItemBuilder)
+    operator fun <Type : Any> DataComponentType<Type>.invoke(value: Type) = builder.set(this, value)
 
     fun buildPreview(): ConfigPreview {
         val settings = OptionsBuilder { this.globalSettings() }
@@ -129,28 +144,56 @@ data class OptionsBuilder(val options: MutableList<ConfigOption> = mutableListOf
         inline operator fun invoke(init: OptionsBuilder.() -> Unit): List<ConfigOption> = OptionsBuilder().apply(init).options
     }
 
-    fun toggle(property: KMutableProperty0<Boolean>) {
-        print(property)
-    }
-}
 
-interface Thingy {
-    fun set(value: Boolean)
-    fun get(): Boolean
+    fun <Owner : AutoTranslated> toggle(owner: Owner, property: KMutableProperty0<Boolean>) {
+        val name = owner.createKey(property.name)
+        options.add(BooleanOption(
+            property::set,
+            property::get,
+            Component.translatable(name),
+            Component.translatable("$name.desc"),
+        ))
+    }
 }
 
 data class BooleanOption(
     val setter: (Boolean) -> Unit,
-    val getter: (Boolean) -> Unit,
+    val getter: () -> Boolean,
     val name: Component,
     val description: Component,
 ) : ConfigOption {
     context(layout: LayoutBuilder)
     override fun visualize() {
-        TODO("Not yet implemented")
+        layout.widget(Widgets.button {
+            it.withTexture(null)
+            it.withSize(10, McFont.height)
+            it.withRenderer(WidgetRenderers.text(Text.of {
+                append(name)
+                append(": ")
+                color = TextColor.GOLD
+                append {
+                    color = if (getter()) TextColor.GREEN else TextColor.RED
+                    append(if (getter()) "On" else "Off")
+                }
+            }.also { title -> it.width = title.width }))
+            it.withCallback {
+                setter(!getter())
+                McScreen.refreshScreen()
+            }
+            it.withTooltip(Text.of {
+                append(description)
+                append("\n\n")
+                append("Meow")
+            })
+        })
+
     }
 }
 
+// todo: better idk someone is hater number 1
+fun McScreen.refreshScreen() {
+    self?.let { it.resize(it.width, it.height) }
+}
 
 interface ConfigOption {
 

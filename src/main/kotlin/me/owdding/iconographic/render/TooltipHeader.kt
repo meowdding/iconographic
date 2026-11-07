@@ -107,7 +107,7 @@ data class TooltipHeader(
 
         val rotation = 45f + (System.currentTimeMillis() / 20) % 360
 
-        this.scissor(x..x + width, y..y + height) {
+        //this.scissor(x..x + width, y..y + height) {
             val itemState = TrackingItemStackRenderState()
             McClient.self.itemModelResolver.updateForTopItem(itemState, item, ItemDisplayContext.GUI, McLevel.self, McPlayer.self, 0)
 
@@ -120,6 +120,6 @@ data class TooltipHeader(
                     itemState,
                 ),
             )
-        }
+        //}
     }
 }
