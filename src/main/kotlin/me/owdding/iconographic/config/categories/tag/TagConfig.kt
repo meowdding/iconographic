@@ -9,12 +9,12 @@ object TagConfig : CategoryKt("tags"), AutoTranslated {
     override val name: TranslatableValue = Translated(translationBase)
 
     init { autoSeparator("general") }
-    val rarity by autoBoolean(true)
-    val category by autoBoolean(true)
+    var rarity by autoBoolean(true)
+    var category by autoBoolean(true)
     val stars by autoBoolean(true)
 
     init { autoSeparator("items") }
-    val breakingPower by autoBoolean(true)
+    var breakingPower by autoBoolean(true)
     val furniture by autoBoolean(true)
     val shardId by autoBoolean(true)
     val dungeonized by autoBoolean(false)

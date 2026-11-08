@@ -2,9 +2,10 @@ package me.owdding.iconographic.features
 
 import me.owdding.iconographic.*
 import me.owdding.iconographic.Iconographic.asTooltipComponents
+import me.owdding.iconographic.config.Config
 import me.owdding.iconographic.config.previews.ConfigPreviewItem
 import me.owdding.iconographic.config.previews.ConfigPreviewSection
-import me.owdding.iconographic.config.previews.Silly1
+import me.owdding.iconographic.config.previews.DrillPreview
 import me.owdding.iconographic.render.TooltipHeader
 import me.owdding.iconographic.system.CustomTooltip
 import me.owdding.iconographic.system.TooltipTag
@@ -30,9 +31,14 @@ import tech.thatgravyboat.skyblockapi.api.data.SkyBlockRarity
 
 object ConfigPreviewScreen : Screen(CommonComponents.EMPTY) {
 
-    var previewItem: ConfigPreviewItem = Silly1
+    var previewItem: ConfigPreviewItem = DrillPreview
 
     override fun isPauseScreen(): Boolean = false
+
+    override fun onClose() {
+        Config.save()
+        super.onClose()
+    }
 
     override fun init() {
         val item = previewItem.item ?: return LayoutFactory.frame {
@@ -97,12 +103,13 @@ object ConfigPreviewScreen : Screen(CommonComponents.EMPTY) {
             section(widgets)
         }
 
-        val options = widgets.options.build(2)
+        val options = widgets.options.build(4)
         val lines = widgets.lines.build(2)
 
         LayoutFactory.horizontal {
             widget(options.withPadding(12))
             spacer(5)
+            // TODO: this doesnt support custom background texture, should just use TooltipRenderUtil.extractBackground()
             widget(lines.withPadding(12).withTexturedBackground(TooltipRenderUtil.getFrameSprite(tooltipStyle)).withTexturedBackground(TooltipRenderUtil.getBackgroundSprite(tooltipStyle)))
         }.center().apply { arrangeElements() }.apply()
     }
@@ -141,7 +148,7 @@ object ConfigPreviewScreen : Screen(CommonComponents.EMPTY) {
 
         fun line(widget: LayoutElement, height: Int) = lines.widget(LayoutFactory.frame(height = height) {
             spacer(height = height)
-            //display(Displays.outline({ 0xFFFFFFFFu }, Displays.empty(widget.width, height)))
+            display(Displays.outline({ 0xFFFFFFFFu }, Displays.empty(widget.width, height)))
             widget(widget)
         })
 

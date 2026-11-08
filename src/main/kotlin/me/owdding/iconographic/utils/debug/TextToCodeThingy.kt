@@ -4,26 +4,24 @@ import com.google.gson.JsonElement
 import com.mojang.datafixers.util.Either
 import com.mojang.serialization.Codec
 import me.owdding.ktmodules.Module
-import net.minecraft.network.chat.CommonComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.ComponentSerialization
 import net.minecraft.network.chat.Style
 import tech.thatgravyboat.skyblockapi.api.events.base.Subscription
 import tech.thatgravyboat.skyblockapi.helpers.McClient
-import tech.thatgravyboat.skyblockapi.utils.codecs.CodecUtils
 import tech.thatgravyboat.skyblockapi.utils.json.Json.readJson
 import tech.thatgravyboat.skyblockapi.utils.json.Json.toDataOrThrow
-import java.util.Optional
-import javax.swing.text.html.Option
-import kotlin.text.appendLine
+import java.util.*
 
 @Module
 object TextToCodeThingy {
 
+    private val CODEC = Codec.either(ComponentSerialization.CODEC.listOf(), ComponentSerialization.CODEC.xmap(::listOf) { it[0] }).xmap(Either<*, *>::unwrap, Either<List<Component>, *>::left)
+
     @Subscription
     context(event: RegisterIconCommandEvent)
-    fun command() = event.registerDevWithCallback("clipboardToCode") {
-        val components = McClient.clipboard.readJson<JsonElement>().toDataOrThrow(Codec.either(ComponentSerialization.CODEC.listOf(), ComponentSerialization.CODEC.xmap(::listOf) { it[0] }).xmap(Either<*, *>::unwrap, Either<List<Component>, *>::left))
+    private fun command() = event.registerDevWithCallback("clipboardToCode") {
+        val components = McClient.clipboard.readJson<JsonElement>().toDataOrThrow(CODEC)
 
         McClient.clipboard = buildString {
             components.forEach {
@@ -59,6 +57,7 @@ object TextToCodeThingy {
     }
 
     fun StringBuilder.indent(amount: Int = 1) = append("  ".repeat(amount))
+
     context(builder: StringBuilder)
     fun String.emitProperties(style: Style, single: Boolean = true) {
 
@@ -71,7 +70,8 @@ object TextToCodeThingy {
             && !style.isItalic
             && !style.isUnderlined
             && !style.isStrikethrough
-            && !style.isObfuscated) {
+            && !style.isObfuscated
+        ) {
             builder.appendLine(")")
             return
         }

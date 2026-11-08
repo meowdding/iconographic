@@ -16,10 +16,10 @@ object MiscConfig : CategoryKt("misc"), AutoTranslated {
     val skillLevelBar by autoBoolean(true)
 
     init { autoSeparator("enchantments") }
-    val itemEnchants by autoBoolean(true)
-    val romanEnchant by autoBoolean(true)
-    val smallEnchantText by autoBoolean(true)
-    val enchantNameBackground by autoBoolean(false)
-    val centerEnchantments by autoBoolean(true)
-    val stackingProgress by autoBoolean(true)
+    var itemEnchants by autoBoolean(true)
+    var romanEnchant by autoBoolean(true)
+    var smallEnchantText by autoBoolean(true)
+    var enchantNameBackground by autoBoolean(false)
+    var centerEnchantments by autoBoolean(true)
+    var stackingProgress by autoBoolean(true)
 }

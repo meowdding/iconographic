@@ -1,12 +1,15 @@
 package me.owdding.iconographic.config.previews
 
 import me.owdding.iconographic.config.categories.mining.MiningConfig
+import me.owdding.iconographic.config.categories.misc.MiscConfig
+import me.owdding.iconographic.config.categories.tag.TagConfig
 import me.owdding.iconographic.config.categories.visuals.VisualsConfig
 import me.owdding.ktmodules.Module
 import net.minecraft.core.component.DataComponents
 import net.minecraft.resources.Identifier
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
+import net.minecraft.world.item.component.ItemLore
 import tech.thatgravyboat.skyblockapi.utils.builders.ItemBuilder
 import tech.thatgravyboat.skyblockapi.utils.lazy.registryBoundLazy
 import tech.thatgravyboat.skyblockapi.utils.text.Text
@@ -17,12 +20,13 @@ import tech.thatgravyboat.skyblockapi.utils.text.TextStyle.color
 import tech.thatgravyboat.skyblockapi.utils.text.TextStyle.obfuscated
 
 @Module
-object Silly1 : ConfigPreviewItem() {
+object DrillPreview : ConfigPreviewItem() {
     override val item: ItemStack? by registryBoundLazy {
         ItemBuilder(Items.DIAMOND_PICKAXE) {
-
             DataComponents.ITEM_MODEL(Identifier.parse("hypixel_skyblock:item/uncategorized/divans_drill"))
             DataComponents.TOOLTIP_STYLE(Identifier.parse("hypixel_skyblock:supreme"))
+            DataComponents.LORE(ItemLore(this@DrillPreview.fullLore().drop(1)))
+            DataComponents.CUSTOM_NAME(this@DrillPreview.fullLore().first())
             customData {
                 "rarity_upgrades"(1)
                 "polarvoid"(5)
@@ -71,8 +75,10 @@ object Silly1 : ConfigPreviewItem() {
     }
 
     override fun OptionsBuilder.globalSettings() {
-        toggle(MiningConfig, MiningConfig::drillComponents)
         toggle(VisualsConfig, VisualsConfig::spinny)
+        toggle(TagConfig, TagConfig::rarity)
+        toggle(TagConfig, TagConfig::category)
+        toggle(TagConfig, TagConfig::breakingPower)
     }
 
     override fun PreviewBuilder.buildPreview() {
@@ -87,6 +93,7 @@ object Silly1 : ConfigPreviewItem() {
             options {
                 toggle(VisualsConfig, VisualsConfig::alignedStats)
                 toggle(VisualsConfig, VisualsConfig::colorStatName)
+                enum(VisualsConfig, VisualsConfig::extraStatsDisplay)
             }
 
             lore {
@@ -123,8 +130,11 @@ object Silly1 : ConfigPreviewItem() {
                 }
             }
         }
-        section("Mrrp") {
 
+        section("Gemstones") {
+            options {
+                toggle(MiningConfig, MiningConfig::gemstoneSlots)
+            }
             lore {
                 add {
                     append("Gemstones: ", TextColor.GRAY)
@@ -144,9 +154,21 @@ object Silly1 : ConfigPreviewItem() {
                     append("✦", TextColor.YELLOW)
                     append("]", TextColor.GOLD)
                 }
+            }
+        }
 
-                space()
+        space()
 
+        section("Enchantments") {
+            options {
+                toggle(MiscConfig, MiscConfig::itemEnchants)
+                toggle(MiscConfig, MiscConfig::romanEnchant)
+                toggle(MiscConfig, MiscConfig::smallEnchantText)
+                toggle(MiscConfig, MiscConfig::enchantNameBackground)
+                toggle(MiscConfig, MiscConfig::centerEnchantments)
+                toggle(MiscConfig, MiscConfig::stackingProgress)
+            }
+            lore {
                 add("Flowstate III") {
                     color = TextColor.LIGHT_PURPLE
                     bold = true
@@ -167,9 +189,16 @@ object Silly1 : ConfigPreviewItem() {
                 add("Prismatic V", TextColor.BLUE)
 
                 add("Smelting Touch I", TextColor.BLUE)
+            }
+        }
 
-                space()
+        space()
 
+        section("Drill Components") {
+            options {
+                toggle(MiningConfig, MiningConfig::drillComponents)
+            }
+            lore {
                 add("Perfectly-Cut Fuel Tank", TextColor.GREEN)
 
                 add("100,000 Max Fuel Capacity", TextColor.DARK_GREEN)
@@ -199,66 +228,73 @@ object Silly1 : ConfigPreviewItem() {
                     append("the Mountain ", TextColor.DARK_PURPLE)
                     append("perks.", TextColor.GRAY)
                 }
+            }
+        }
 
-                space()
+        space()
 
+        section("Fuel") {
+            options {
+                toggle(MiningConfig, MiningConfig::drillFuel)
+            }
+            lore {
                 add {
                     append("Fuel: ", TextColor.GRAY)
                     append("52,704", TextColor.DARK_GREEN)
                     append("/100k", TextColor.DARK_GRAY)
                 }
+            }
+        }
 
-                space()
+        space()
 
-                add("Heated Bonus", TextColor.BLUE)
+        loreSection {
+            add("Heated Bonus", TextColor.BLUE)
 
-                add {
-                    append("Grants ", TextColor.GRAY)
-                    append("+1 Mining Fortune ", TextColor.GOLD)
-                    append("and ", TextColor.GRAY)
-                    append("+4", TextColor.GOLD)
+            add {
+                append("Grants ", TextColor.GRAY)
+                append("+1 Mining Fortune ", TextColor.GOLD)
+                append("and ", TextColor.GRAY)
+                append("+4", TextColor.GOLD)
+            }
+
+            add {
+                append("Mining Speed ", TextColor.GOLD)
+                append("per ", TextColor.GRAY)
+                append("1♨ Heat ", TextColor.RED)
+                append("you have.", TextColor.GRAY)
+            }
+
+            space()
+
+            add {
+                append("* ") {
+                    color = TextColor.DARK_GRAY
+                    bold = true
                 }
-
-                add {
-                    append("Mining Speed ", TextColor.GOLD)
-                    append("per ", TextColor.GRAY)
-                    append("1♨ Heat ", TextColor.RED)
-                    append("you have.", TextColor.GRAY)
+                append("Co-op Soulbound ", TextColor.DARK_GRAY)
+                append("*") {
+                    color = TextColor.DARK_GRAY
+                    bold = true
                 }
+            }
 
-                space()
-
-                add {
-                    append("* ") {
-                        color = TextColor.DARK_GRAY
-                        bold = true
-                    }
-                    append("Co-op Soulbound ", TextColor.DARK_GRAY)
-                    append("*") {
-                        color = TextColor.DARK_GRAY
-                        bold = true
-                    }
+            add {
+                append("a") {
+                    color = TextColor.AQUA
+                    bold = true
+                    obfuscated = true
                 }
-
-                add {
-                    append("a") {
-                        color = TextColor.AQUA
-                        bold = true
-                        obfuscated = true
-                    }
-                    append(" ")
-                    append("DIVINE DRILL ") {
-                        color = TextColor.AQUA
-                        bold = true
-                    }
-                    append("a") {
-                        color = TextColor.AQUA
-                        bold = true
-                        obfuscated = true
-                    }
+                append(" ")
+                append("DIVINE DRILL ") {
+                    color = TextColor.AQUA
+                    bold = true
                 }
-
-
+                append("a") {
+                    color = TextColor.AQUA
+                    bold = true
+                    obfuscated = true
+                }
             }
         }
     }

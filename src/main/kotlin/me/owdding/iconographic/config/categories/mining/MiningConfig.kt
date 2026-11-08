@@ -9,9 +9,9 @@ object MiningConfig : CategoryKt("mining"), AutoTranslated {
     override val name: TranslatableValue = Translated(translationBase)
 
     init { autoSeparator("drills") }
-    val drillFuel by autoBoolean(true)
+    var drillFuel by autoBoolean(true)
     var drillComponents by autoBoolean(true)
 
     init { autoSeparator("gemstones") }
-    val gemstoneSlots by autoBoolean(true)
+    var gemstoneSlots by autoBoolean(true)
 }
