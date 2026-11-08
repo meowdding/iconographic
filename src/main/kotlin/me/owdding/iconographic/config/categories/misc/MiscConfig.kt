@@ -11,7 +11,7 @@ object MiscConfig : CategoryKt("misc"), AutoTranslated {
 
     init { autoSeparator("misc") }
     val alignedItemAbility by autoBoolean(false)
-    val clickIcons by autoEnum(ClickFeature.Style.REPLACE)
+    var clickIcons by autoEnum(ClickFeature.Style.REPLACE)
     val enchantedBookNames by autoBoolean(true)
     val skillLevelBar by autoBoolean(true)
 

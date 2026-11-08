@@ -5,6 +5,10 @@ import com.teamresourceful.resourcefulconfig.api.types.info.Translatable
 import earth.terrarium.olympus.client.components.Widgets
 import earth.terrarium.olympus.client.components.renderers.WidgetRenderers
 import me.owdding.iconographic.config.AutoTranslated
+import me.owdding.iconographic.config.categories.visuals.VisualsConfig
+import me.owdding.iconographic.config.categories.visuals.VisualsConfig.alignedStats
+import me.owdding.iconographic.config.categories.visuals.VisualsConfig.colorStatName
+import me.owdding.iconographic.config.categories.visuals.VisualsConfig.extraStatsDisplay
 import me.owdding.lib.builder.LayoutBuilder
 import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.component.DataComponents
@@ -24,6 +28,8 @@ import tech.thatgravyboat.skyblockapi.utils.text.TextColor
 import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.width
 import tech.thatgravyboat.skyblockapi.utils.text.TextStyle.color
 import kotlin.reflect.KMutableProperty0
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
 @DslMarker
 annotation class PreviewDsl
@@ -72,6 +78,17 @@ data class PreviewBuilder(val list: MutableList<ConfigPreviewSection> = mutableL
 
     inline fun loreSection(init: TooltipBuilder.() -> Unit) {
         list.add(SectionBuilder(CommonText.EMPTY) { lore(init) })
+    }
+
+    inline fun statsSection(init: TooltipBuilder.() -> Unit) {
+        list.add(SectionBuilder(Text.of("Stats")) {
+            options {
+                toggle(VisualsConfig, VisualsConfig::alignedStats)
+                toggle(VisualsConfig, VisualsConfig::colorStatName)
+                enum(VisualsConfig, VisualsConfig::extraStatsDisplay)
+            }
+            lore(init)
+        })
     }
 }
 
@@ -215,6 +232,7 @@ data class BooleanOption(
                     setter(!getter())
                     McScreen.refreshScreen()
                 }
+                it.setTooltipDelay((-1).seconds.toJavaDuration())
                 it.withTooltip(
                     Text.of {
                         color = TextColor.GRAY
@@ -272,6 +290,7 @@ data class EnumOption<T : Enum<T>>(
                     setter(enumEntries[(enumEntries.size + getter().ordinal - 1) % enumEntries.size])
                     McScreen.refreshScreen()
                 }
+                it.setTooltipDelay((-1).seconds.toJavaDuration())
                 it.withTooltip(
                     Text.of {
                         color = TextColor.GRAY
@@ -295,7 +314,7 @@ data class EnumOption<T : Enum<T>>(
 
     }
 
-    private fun <T: Enum<T>> T.toComponent(): Component = when (this) {
+    private fun <T : Enum<T>> T.toComponent(): Component = when (this) {
         is Translatable -> Component.translatable(this.translationKey)
         else -> Component.literal(this.name.toTitleCase())
     }

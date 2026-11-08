@@ -12,12 +12,12 @@ object PetsConfig : CategoryKt("pets"), AutoTranslated {
     override val name: TranslatableValue = Translated(translationBase)
 
     init { autoSeparator("main") }
-    val petAbilities by autoBoolean(true)
-    val petHeldItem by autoBoolean(true)
-    val petLevel by autoBoolean(true)
-    val experienceFormat by autoEnum(PetDisplayType.INTEGER)
-    val maxExperienceFormat by autoEnum(PetDisplayType.SHORTENED)
-    val petFavourite by autoBoolean(true)
+    var petAbilities by autoBoolean(true)
+    var petHeldItem by autoBoolean(true)
+    var petLevel by autoBoolean(true)
+    var experienceFormat by autoEnum(PetDisplayType.INTEGER)
+    var maxExperienceFormat by autoEnum(PetDisplayType.SHORTENED)
+    var petFavourite by autoBoolean(true)
 }
 
 enum class PetDisplayType : Translatable {

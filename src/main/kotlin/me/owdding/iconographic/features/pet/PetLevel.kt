@@ -90,7 +90,7 @@ data object PetLevel : TooltipFeature() {
         }
 
         if (extractedLines.isNotEmpty()) {
-            var insertIndex = 1
+            var insertIndex = 1.coerceAtMost(originalMerger.destination.size)
 
             originalMerger.destination.add(insertIndex++, SpacerLine(height = 3))
             originalMerger.destination.add(insertIndex++, SeparatorRenderer)

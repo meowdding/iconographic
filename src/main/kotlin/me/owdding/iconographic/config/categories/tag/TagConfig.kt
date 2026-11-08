@@ -20,7 +20,7 @@ object TagConfig : CategoryKt("tags"), AutoTranslated {
     val dungeonized by autoBoolean(false)
 
     init { autoSeparator("pets") }
-    val pet by autoBoolean(true)
-    val petCandy by autoBoolean(true)
+    var pet by autoBoolean(true)
+    var petCandy by autoBoolean(true)
 
 }

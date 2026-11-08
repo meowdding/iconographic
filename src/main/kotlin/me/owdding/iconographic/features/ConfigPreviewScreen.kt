@@ -12,6 +12,7 @@ import me.owdding.iconographic.config.Config
 import me.owdding.iconographic.config.previews.ConfigPreviewItem
 import me.owdding.iconographic.config.previews.ConfigPreviewSection
 import me.owdding.iconographic.config.previews.DrillPreview
+import me.owdding.iconographic.config.previews.PetPreview
 import me.owdding.iconographic.render.TooltipHeader
 import me.owdding.iconographic.system.CustomTooltip
 import me.owdding.iconographic.system.TooltipTag
@@ -46,7 +47,7 @@ object ConfigPreviewScreen : Screen(CommonComponents.EMPTY) {
 
     val alignBoxes by debugToggle("preview/align_and_boxes")
 
-    var previewItem: ConfigPreviewItem = DrillPreview
+    var previewItem: ConfigPreviewItem = PetPreview
 
     override fun isPauseScreen(): Boolean = false
 
