@@ -10,16 +10,21 @@ import me.owdding.iconographic.lines.SpacerLine
 import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.Result
 import me.owdding.iconographic.system.TooltipFeature
+import me.owdding.iconographic.utils.ListMerger
 import me.owdding.iconographic.utils.chat.DisplayColor
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.renderer.RenderPipelines
+import net.minecraft.network.chat.Component
 import net.minecraft.util.ARGB
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.api.data.SkyBlockCategory
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
 import tech.thatgravyboat.skyblockapi.api.datatype.getData
 import tech.thatgravyboat.skyblockapi.api.remote.api.SkyBlockId
+import tech.thatgravyboat.skyblockapi.api.repo.apis.SkyBlockItemsRepo
+import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.stripped
+import tech.thatgravyboat.skyblockapi.utils.text.TextUtils.isBlank
 import kotlin.math.max
 
 @RegisterFeature
@@ -27,90 +32,61 @@ data object DrillComponents : TooltipFeature() {
     override val enabled: Boolean get() = MiningConfig.drillComponents
     override val priority: Int = 20
 
-    override fun ItemStack.modifyEntries(list: MutableList<TooltipLine>, previousResult: Result?): Result {
-        if (getData(DataTypes.CATEGORY) != SkyBlockCategory.DRILL) return Result.unmodified
+    override fun ItemStack.modifyEntries(list: MutableList<TooltipLine>, previousResult: Result?): Result = withComponentMerger(list) {
+        if (getData(DataTypes.CATEGORY) != SkyBlockCategory.DRILL) return@withComponentMerger Result.unmodified
 
-        val fuelIndex = list.indexOfFirst {
-            val comp = it as? ComponentLike ?: return@indexOfFirst false
-            comp.stripped.trim().startsWith("Fuel:")
+        val firstLines = buildList {
+            DataTypes.FUEL_TANK()?.let { add(SkyBlockItemsRepo.getLazyItemStack(it)?.getDisplayName()?.stripped ?: return@let) }
+            DataTypes.ENGINE()?.let { add(SkyBlockItemsRepo.getLazyItemStack(it)?.getDisplayName()?.stripped ?: return@let) }
+            DataTypes.UPGRADE_MODULE()?.let { add(SkyBlockItemsRepo.getLazyItemStack(it)?.getDisplayName()?.stripped ?: return@let) }
+            add("Fuel Tank: Not Installed")
+            add("Drill Engine: Not Installed")
+            add("Upgrade Module: Not Installed")
         }
-        if (fuelIndex == -1) return Result.unmodified
 
-        var currentIndex = fuelIndex - 1
-        val foundBlocks = mutableListOf<IntRange>()
+        addUntil { it.stripped in firstLines }
+        if (!canRead()) return@withComponentMerger Result.unmodified
 
-        while (currentIndex >= 0 && foundBlocks.size < 4) {
-            while (currentIndex >= 0) {
-                val isBlank = when (val line = list[currentIndex]) {
-                    is ComponentLike -> line.stripped.isBlank()
-                    is SpacerLine -> true
-                    else -> false
-                }
-                if (!isBlank) break
-                currentIndex--
+        val upgradeComp = parseComponent(ComponentType.UPGRADE, DataTypes.UPGRADE_MODULE()) ?: return@withComponentMerger Result.unmodified
+        val engineComp = parseComponent(ComponentType.ENGINE, DataTypes.ENGINE()) ?: return@withComponentMerger Result.unmodified
+        val tankComp = parseComponent(ComponentType.TANK, DataTypes.FUEL_TANK()) ?: return@withComponentMerger Result.unmodified
+
+        // Remove Mechanic line
+        if (DataTypes.FUEL_TANK() == null && DataTypes.ENGINE() == null && DataTypes.UPGRADE_MODULE() == null) {
+            read()
+            if (peek().stripped.startsWith("Apply Drill Parts")) {
+                read()
+                read()
+                read()
             }
-            if (currentIndex < 0) break
-
-            val blockEnd = currentIndex
-            while (currentIndex >= 0) {
-                val isBlank = when (val line = list[currentIndex]) {
-                    is ComponentLike -> line.stripped.isBlank()
-                    is SpacerLine -> true
-                    else -> false
-                }
-                if (isBlank) break
-                currentIndex--
-            }
-            val blockStart = currentIndex + 1
-
-            foundBlocks.add(blockStart..blockEnd)
         }
 
-        if (foundBlocks.size < 3) return Result.unmodified
+        originalMerger.add(upgradeComp)
+        originalMerger.add(SpacerLine(height = 4))
+        originalMerger.add(engineComp)
+        originalMerger.add(SpacerLine(height = 4))
+        originalMerger.add(tankComp)
 
-        val firstBlockLine = list[foundBlocks[0].first] as? ComponentLike ?: return Result.unmodified
-        val isMechanicLine = firstBlockLine.stripped.trim().startsWith("Apply Drill Parts")
-        if (isMechanicLine && foundBlocks.size < 4) return Result.unmodified
-
-        val upgradeRange = if (isMechanicLine) foundBlocks[1] else foundBlocks[0]
-        val engineRange = if (isMechanicLine) foundBlocks[2] else foundBlocks[1]
-        val tankRange = if (isMechanicLine) foundBlocks[3] else foundBlocks[2]
-
-        val tankText = (list[tankRange.first] as? ComponentLike)?.stripped?.trim() ?: ""
-        if (!tankText.contains("Tank") && !tankText.startsWith("Fuel Tank:")) {
-            return Result.unmodified
-        }
-
-        val upgradeComp = parseComponent(list, upgradeRange, ComponentType.UPGRADE, getData(DataTypes.UPGRADE_MODULE)) ?: return Result.unmodified
-        val engineComp = parseComponent(list, engineRange, ComponentType.ENGINE, getData(DataTypes.ENGINE)) ?: return Result.unmodified
-        val tankComp = parseComponent(list, tankRange, ComponentType.TANK, getData(DataTypes.FUEL_TANK)) ?: return Result.unmodified
-
-        val removeStart = tankRange.first
-        val removeEnd = if (isMechanicLine) foundBlocks[0].last else foundBlocks[0].last
-
-        for (i in removeEnd downTo removeStart) {
-            list.removeAt(i)
-        }
-
-        list.add(removeStart, upgradeComp)
-        list.add(removeStart, SpacerLine(height = 4))
-        list.add(removeStart, engineComp)
-        list.add(removeStart, SpacerLine(height = 4))
-        list.add(removeStart, tankComp)
-
-        return Result.modified
+        Result.modified
     }
 
-    private fun parseComponent(
-        list: MutableList<TooltipLine>,
-        range: IntRange,
+    private fun ListMerger<Component>.parseComponent(
         type: ComponentType,
         skyblockId: String?,
     ): DrillComponentLine? {
-        val lines = range.mapNotNull { list[it] as? ComponentLike }
-        if (lines.isEmpty()) return null
-        val isInstalled = !lines[0].stripped.trim().endsWith("Not Installed")
-        return DrillComponentLine(type, lines[0], lines.drop(1), isInstalled, skyblockId?.let { SkyBlockId.item(it) })
+        if (!canRead()) return null
+        if (peek().isBlank()) read()
+        val title = read()
+        val isInstalled = !title.stripped.trim().endsWith("Not Installed")
+        return DrillComponentLine(
+            type, ComponentLike(title),
+            buildList {
+                while (canRead() && !peek().isBlank()) {
+                    add(ComponentLike(read()))
+                }
+            },
+            isInstalled, skyblockId?.let { SkyBlockId.item(it) },
+        )
     }
 
     data class DrillComponentLine(
