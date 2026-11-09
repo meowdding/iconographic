@@ -129,10 +129,9 @@ object ConfigPreviewScreen : Screen(CommonComponents.EMPTY) {
             spacer(5)
             widget(
                 LayoutFactory.frame {
-                    val element = lines
-                    widget(object : AbstractWidget(0, 0, element.width, element.height, CommonText.EMPTY) {
+                    widget(object : AbstractWidget(0, 0, lines.width, lines.height, CommonText.EMPTY) {
                         override fun extractWidgetRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, a: Float) {
-                            TooltipRenderUtil.extractTooltipBackground(graphics, this.x, this.y, element.width, element.height, tooltipStyle)
+                            TooltipRenderUtil.extractTooltipBackground(graphics, this.x, this.y, lines.width, lines.height, tooltipStyle)
                         }
 
                         override fun updateWidgetNarration(output: NarrationElementOutput) {}
@@ -140,7 +139,7 @@ object ConfigPreviewScreen : Screen(CommonComponents.EMPTY) {
                         alignHorizontallyCenter()
                         alignVerticallyMiddle()
                     }
-                    widget(element) {
+                    widget(lines) {
                         alignHorizontallyCenter()
                         alignVerticallyMiddle()
                     }
