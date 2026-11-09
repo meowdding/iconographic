@@ -130,7 +130,8 @@ object PetPreview : ConfigPreviewItem() {
 
                 add("(Max 100M collection)", TextColor.DARK_GRAY)
 
-                space()
+                // Purposefully removed to not waste screen height
+                /*space()
 
                 add("Dragon's Greed", TextColor.GOLD)
 
@@ -162,7 +163,7 @@ object PetPreview : ConfigPreviewItem() {
                 add {
                     append("coins in your bank. ", TextColor.GRAY)
                     append("(Max 195%)", TextColor.DARK_GRAY)
-                }
+                }*/
             }
         }
 

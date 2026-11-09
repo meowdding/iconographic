@@ -45,9 +45,10 @@ import tech.thatgravyboat.skyblockapi.api.data.SkyBlockRarity
 
 object ConfigPreviewScreen : Screen(CommonComponents.EMPTY) {
 
-    val alignBoxes by debugToggle("preview/align_and_boxes")
+    private val alignBoxes by debugToggle("preview/align_and_boxes")
 
-    var previewItem: ConfigPreviewItem = PetPreview
+    private val previews = listOf(DrillPreview, PetPreview)
+    private var previewItem: ConfigPreviewItem = previews.first()
 
     override fun isPauseScreen(): Boolean = false
 

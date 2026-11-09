@@ -245,7 +245,7 @@
           "desc": "Uses a smaller font for enchantments."
         },
         "enchantNameBackground": {
-          "@value": "Enchantment Name Background",
+          "@value": "Name Background",
           "desc": "Adds a background on enchantment names."
         },
         "centerEnchantments": {
