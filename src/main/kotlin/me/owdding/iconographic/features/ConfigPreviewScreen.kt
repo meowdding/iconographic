@@ -42,6 +42,7 @@ import net.minecraft.resources.Identifier
 import net.minecraft.util.TriState
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.api.data.SkyBlockRarity
+import tech.thatgravyboat.skyblockapi.utils.text.CommonText
 
 object ConfigPreviewScreen : Screen(CommonComponents.EMPTY) {
 
@@ -126,24 +127,29 @@ object ConfigPreviewScreen : Screen(CommonComponents.EMPTY) {
         LayoutFactory.horizontal {
             widget(options.withPadding(12))
             spacer(5)
-            // TODO: this doesnt support custom background texture, should just use TooltipRenderUtil.extractBackground()
-            widget(lines.withPadding(12).withTexturedBackground(TooltipRenderUtil.getFrameSprite(tooltipStyle)).withTexturedBackground(TooltipRenderUtil.getBackgroundSprite(tooltipStyle)))
+            widget(
+                LayoutFactory.frame {
+                    val element = lines
+                    widget(object : AbstractWidget(0, 0, element.width, element.height, CommonText.EMPTY) {
+                        override fun extractWidgetRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, a: Float) {
+                            TooltipRenderUtil.extractTooltipBackground(graphics, this.x, this.y, element.width, element.height, tooltipStyle)
+                        }
+
+                        override fun updateWidgetNarration(output: NarrationElementOutput) {}
+                    }) {
+                        alignHorizontallyCenter()
+                        alignVerticallyMiddle()
+                    }
+                    widget(element) {
+                        alignHorizontallyCenter()
+                        alignVerticallyMiddle()
+                    }
+                }
+            )
         }.center().let {
             val diff = this@ConfigPreviewScreen.width - it.width - 20
             PaddedWidget(it, 0, diff / 2, 0, diff / 2)
         }.asScrollable(this@ConfigPreviewScreen.width, this@ConfigPreviewScreen.height).apply()
-    }
-
-    fun LayoutElement.withTexturedBackground(location: Identifier, width: Int = this.width, height: Int = this.height): LayoutElement = LayoutFactory.frame {
-        val element = this@withTexturedBackground
-        widget(Displays.sprite(location, width, height).asWidget()) {
-            alignHorizontallyCenter()
-            alignVerticallyMiddle()
-        }
-        widget(element) {
-            alignHorizontallyCenter()
-            alignVerticallyMiddle()
-        }
     }
 
     data class PreviewWidgets(
