@@ -39,7 +39,7 @@ public class AbstractContainerScreenMixin {
     ) {
         Iconographic.extractingItemTooltip = item;
         Iconographic.currentTooltipStyle = style;
-        original.call(instance, font, texts, optionalImage, xo, yo, style/*? >= 26.3 >> ')' */, replaceExisting);
+        original.call(instance, font, texts, optionalImage, xo, yo, style/*? if >= 26.3 >> ')' */, replaceExisting);
         Iconographic.extractingItemTooltip = null;
         Iconographic.currentTooltipStyle = null;
     }
