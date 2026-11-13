@@ -6,7 +6,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import me.owdding.iconographic.Iconographic;
-import me.owdding.iconographic.Keybinds;
+import me.owdding.iconographic.config.Keybinds;
 import me.owdding.iconographic.config.Config;
 import me.owdding.iconographic.config.NonSkyBlockItemMode;
 import net.minecraft.client.gui.Font;

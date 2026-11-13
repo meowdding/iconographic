@@ -1,6 +1,7 @@
-package me.owdding.iconographic
+package me.owdding.iconographic.config
 
 import com.mojang.blaze3d.platform.InputConstants
+import me.owdding.iconographic.Iconographic
 import me.owdding.ktmodules.Module
 import me.owdding.lib.utils.MeowddingKeybind
 import tech.thatgravyboat.skyblockapi.api.events.base.Subscription
