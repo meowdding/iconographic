@@ -1,11 +1,11 @@
 package me.owdding.iconographic.features
 
-import me.owdding.iconographic.config.categories.misc.MiscConfig
 import me.owdding.iconographic.config.categories.visuals.VisualsConfig
 import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.TooltipFeature
 import me.owdding.lib.rendering.text.builtin.GradientTextShader
 import me.owdding.lib.rendering.text.textShader
+import me.owdding.lib.utils.GradientDirection
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.util.ARGB
@@ -44,8 +44,8 @@ data object ShinyHolographicFeature : TooltipFeature() {
                 currentColor,
                 currentColor,
             ),
-            direction = GradientTextShader.Direction.RIGHT,
-            speed = 3f
+            direction = GradientDirection.RIGHT,
+            speed = 3f,
         )
     }
 }

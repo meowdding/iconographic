@@ -9,6 +9,7 @@ import me.owdding.iconographic.utils.chat.DisplayColor.displayColor
 import me.owdding.ktmodules.Module
 import me.owdding.lib.rendering.text.builtin.GradientTextShader
 import me.owdding.lib.rendering.text.textShader
+import me.owdding.lib.utils.GradientDirection
 import net.minecraft.util.Util
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.api.data.SkyBlockRarity
@@ -69,7 +70,7 @@ object ShaderCache {
                 endColor,
                 endColor,
             ),
-            direction = GradientTextShader.Direction.UP,
+            direction = GradientDirection.UP,
             speed = 3f,
         )
     }
