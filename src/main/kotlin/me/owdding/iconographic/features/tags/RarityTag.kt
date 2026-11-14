@@ -49,7 +49,7 @@ data object RarityTag : TooltipFeature() {
             Text.of(rarity.displayName, rarity.displayColor)
         }
 
-        return listOf(TooltipTag.literal(comp, rarity.displayColor))
+        return listOf(TooltipTag.literalGradient(comp, rarity.color, rarity.skyBlockColor))
     }
 }
 
