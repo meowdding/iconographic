@@ -129,6 +129,8 @@ dependencies {
 
     implementation(libs.meowdding.ktmodules)
     ksp(libs.meowdding.ktmodules)
+    implementation(libs.meowdding.ktcodecs)
+    ksp(libs.meowdding.ktcodecs)
 
     "api"(versionedCatalog["skyblockapi"]) {
         capabilities { requireCapability("tech.thatgravyboat:skyblock-api-${stonecutter.current.version}") }

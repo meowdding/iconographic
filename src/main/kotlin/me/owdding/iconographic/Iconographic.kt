@@ -1,10 +1,12 @@
 package me.owdding.iconographic
 
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen
+import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigUI
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator
 import me.owdding.iconographic.TooltipInformation.Companion.toInformation
 import me.owdding.iconographic.api.ImcHandler
 import me.owdding.iconographic.config.Config
+import me.owdding.iconographic.config.GradientColorOption
 import me.owdding.iconographic.generated.BuildInfo
 import me.owdding.iconographic.generated.IconographicApiDebug
 import me.owdding.iconographic.generated.IconographicModules
@@ -73,6 +75,8 @@ object Iconographic : ClientModInitializer, MeowddingLogger by MeowddingLogger.a
         info("Loaded Iconographic!")
 
         ImcHandler.setup()
+
+        ResourcefulConfigUI.registerElementRenderer(GradientColorOption.ID, ::GradientColorOption)
 
         IconographicModules.init { SkyBlockAPI.eventBus.register(it) }
 
