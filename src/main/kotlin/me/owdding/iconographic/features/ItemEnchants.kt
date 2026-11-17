@@ -38,8 +38,8 @@ data object ItemEnchants : TooltipFeature() {
     override val enabled: Boolean get() = MiscConfig.itemEnchants
     override val priority: Int = 15
 
-    private val singleEnchantMatcher = ComponentRegex("(?<=^|, )(?<name>[A-Z][A-Za-z-]* (?:[A-Za-z-]* )*)(?<lvl>[MDCLXVI]+)(?<stacking> [\\d.,]+)?,?\\b")
-    private val enchantLineRegex = ComponentRegex("(?:[A-Z][A-Za-z-]* (?:[A-Za-z-]* )*[MDCLXVI]+(?:, )?)+(?: [\\d.,+]+)?")
+    private val singleEnchantMatcher = ComponentRegex("(?<=^|, )(?<name>[A-Z][A-Za-z'-]* (?:[A-Za-z'-]* )*)(?<lvl>[MDCLXVI]+)(?<stacking> [\\d.,]+)?,?\\b")
+    private val enchantLineRegex = ComponentRegex("(?:[A-Z][A-Za-z'-]* (?:[A-Za-z'-]* )*[MDCLXVI]+(?:, )?)+(?: [\\d.,+]+)?")
 
     private fun Component.isEnchantmentLine() = enchantLineRegex.matches(this)
 
