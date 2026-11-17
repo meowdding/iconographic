@@ -6,11 +6,12 @@ import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.Result
 import me.owdding.iconographic.system.TooltipFeatureWithContext
 import me.owdding.iconographic.system.TooltipTag
+import me.owdding.iconographic.utils.RemoteStrings
 import me.owdding.iconographic.utils.chat.DisplayColor
+import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.stripped
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.collections.MutableList
 
 @RegisterFeature
 data object BreakingPowerTag : TooltipFeatureWithContext<AtomicInteger>() {
@@ -18,7 +19,7 @@ data object BreakingPowerTag : TooltipFeatureWithContext<AtomicInteger>() {
     override fun createContext(): AtomicInteger = AtomicInteger(-1)
     override val priority: Int = 2
 
-    val breakingPower = Regex("(?i)Breaking Power (\\d+)")
+    private val breakingPower by RemoteStrings.resolve().regex("(?i)Breaking Power (\\d+)")
 
     context(context: AtomicInteger)
     override fun ItemStack.rightTags(): List<TooltipTag> {

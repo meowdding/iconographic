@@ -17,7 +17,6 @@ import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.stripped
 import tech.thatgravyboat.skyblockapi.utils.text.TextStyle.clipboard
 import tech.thatgravyboat.skyblockapi.utils.text.TextStyle.color
 import tech.thatgravyboat.skyblockapi.utils.text.TextStyle.hover
-import kotlin.reflect.KProperty0
 import kotlin.reflect.KProperty1
 import tech.thatgravyboat.skyblockapi.api.events.misc.DebugBuilder as ApiDebugBuilder
 

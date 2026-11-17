@@ -9,10 +9,12 @@ import me.owdding.iconographic.font
 import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.Result
 import me.owdding.iconographic.system.TooltipFeature
+import me.owdding.iconographic.utils.RemoteStrings
 import me.owdding.iconographic.utils.chat.ChatUtils.mc5
 import me.owdding.iconographic.utils.chat.DisplayColor
 import me.owdding.iconographic.utils.debug.debugToggle
 import me.owdding.ktmodules.Module
+import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
@@ -20,7 +22,6 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.helpers.McScreen
 import tech.thatgravyboat.skyblockapi.utils.extentions.getSkyBlockId
-import tech.thatgravyboat.skyblockapi.utils.regex.component.toComponentRegex
 import tech.thatgravyboat.skyblockapi.utils.text.Text
 import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.stripped
 import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.width
@@ -37,7 +38,7 @@ data object StatLines : TooltipFeature() {
     override val enabled: Boolean get() = VisualsConfig.alignedStats
     override val priority: Int = 25
 
-    val statRegex = Regex("^(?<name>\\w[\\w ]+): (?<value>[+-]?[\\d,.]+%?)(?<icon>[^\\d\\s]?)(?: (?<extra>.+))?$").toComponentRegex()
+    val statRegex by RemoteStrings.resolve().componentRegex("^(?<name>\\w[\\w ]+): (?<value>[+-]?[\\d,.]+%?)(?<icon>[^\\d\\s]?)(?: (?<extra>.+))?$")
 
     override fun ItemStack.modifyEntries(list: MutableList<TooltipLine>, previousResult: Result?): Result = withComponentMerger(list) {
         var modified = false

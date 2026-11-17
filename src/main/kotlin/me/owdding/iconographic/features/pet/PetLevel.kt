@@ -1,11 +1,9 @@
 package me.owdding.iconographic.features.pet
 
 import me.owdding.iconographic.ComponentLike
-import me.owdding.lib.extensions.shorten
 import me.owdding.iconographic.ExtractableTooltipLine
-import me.owdding.iconographic.TooltipLine
 import me.owdding.iconographic.Iconographic.id
-import me.owdding.iconographic.config.categories.misc.MiscConfig
+import me.owdding.iconographic.TooltipLine
 import me.owdding.iconographic.config.categories.pets.PetsConfig
 import me.owdding.iconographic.font
 import me.owdding.iconographic.lines.SpacerLine
@@ -13,7 +11,9 @@ import me.owdding.iconographic.render.SeparatorRenderer
 import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.Result
 import me.owdding.iconographic.system.TooltipFeature
+import me.owdding.iconographic.utils.RemoteStrings
 import me.owdding.iconographic.utils.chat.ChatUtils
+import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.renderer.RenderPipelines
@@ -22,8 +22,7 @@ import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
 import tech.thatgravyboat.skyblockapi.utils.extentions.parseFormattedFloat
 import tech.thatgravyboat.skyblockapi.utils.extentions.scissor
-import tech.thatgravyboat.skyblockapi.utils.extentions.toFormattedString
-
+import tech.thatgravyboat.skyblockapi.utils.regex.RegexUtils.findGroup
 import tech.thatgravyboat.skyblockapi.utils.text.Text
 import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.stripped
 import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.width
@@ -38,7 +37,7 @@ data object PetLevel : TooltipFeature() {
     override val priority: Int = 10
 
     const val ARROW = "▸"
-    val regex = Regex("^Progress to Level (?<level>\\d+): .*|MAX LEVEL$")
+    val regex by RemoteStrings.resolve().regex("^Progress to Level (?<level>\\d+): .*|MAX LEVEL$")
 
     override fun ItemStack.applies(): Boolean = DataTypes.SKYBLOCK_ID()?.isPet == true
 
@@ -57,7 +56,7 @@ data object PetLevel : TooltipFeature() {
             val headerLine = read().stripped.trim()
             val isMaxedHeader = headerLine == "MAX LEVEL"
 
-            val targetLevel = regex.find(headerLine)?.groups?.get("level")?.value?.toIntOrNull()
+            val targetLevel = regex.findGroup(headerLine, "level")?.toIntOrNull()
 
             if (!canRead()) break
             val line = read().stripped.trim()

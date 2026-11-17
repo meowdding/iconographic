@@ -1,7 +1,6 @@
 package me.owdding.iconographic.lines
 
 import me.owdding.iconographic.ExtractableTooltipLine
-import me.owdding.iconographic.TooltipLine
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphicsExtractor
 
