@@ -22,14 +22,17 @@ import com.teamresourceful.resourcefulconfig.client.screens.base.OverlayScreen
 import earth.terrarium.olympus.client.components.buttons.Button
 import earth.terrarium.olympus.client.utils.ListenableState
 import me.owdding.iconographic.Iconographic
+import me.owdding.iconographic.config.categories.visuals.VisualsConfig
 import me.owdding.iconographic.generated.IconographicCodecs
 import me.owdding.ktcodecs.GenerateCodec
 import me.owdding.lib.builder.LayoutFactory
 import me.owdding.lib.rendering.GuiRenderTypes.animatedGradient
+import me.owdding.lib.rendering.text.PrideShader
+import me.owdding.lib.rendering.text.builtin.GradientTextShader
+import me.owdding.lib.rendering.text.textShader
 import me.owdding.lib.utils.GradientDirection
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.AbstractWidget
-import net.minecraft.client.gui.layouts.LinearLayout
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.MouseButtonEvent
@@ -40,16 +43,19 @@ import net.minecraft.util.ARGB
 import tech.thatgravyboat.skyblockapi.helpers.McClient
 import tech.thatgravyboat.skyblockapi.helpers.McFont
 import tech.thatgravyboat.skyblockapi.helpers.McScreen
+import tech.thatgravyboat.skyblockapi.utils.extentions.toFormattedName
 import tech.thatgravyboat.skyblockapi.utils.extentions.toIntValue
 import tech.thatgravyboat.skyblockapi.utils.json.Json.readJson
 import tech.thatgravyboat.skyblockapi.utils.json.Json.toData
 import tech.thatgravyboat.skyblockapi.utils.json.Json.toJson
 import tech.thatgravyboat.skyblockapi.utils.text.CommonText
+import tech.thatgravyboat.skyblockapi.utils.text.SkyBlockColor
 import tech.thatgravyboat.skyblockapi.utils.text.Text
 import tech.thatgravyboat.skyblockapi.utils.text.TextColor
 import java.util.function.Consumer
 import java.util.function.Supplier
 import java.util.regex.Pattern
+import kotlin.math.ceil
 
 class GradientColorOption(val element: ResourcefulConfigElement) : ResourcefulConfigElementRenderer {
     val entry get() = (element as ResourcefulConfigEntryElement).entry() as ResourcefulConfigValueEntry
@@ -59,7 +65,7 @@ class GradientColorOption(val element: ResourcefulConfigElement) : ResourcefulCo
 
     override fun widgets(): List<AbstractWidget> = listOf(
         GradientColorOptionWidget(
-            { GradientColorOptionWidget.State.fromString(entry.string) },
+            { GradientColorOptionWidget.OptionState.fromString(entry.string) },
             { entry.string = it.asJson },
         ),
         SpriteButton.builder(12, 12)
@@ -75,9 +81,9 @@ class GradientColorOption(val element: ResourcefulConfigElement) : ResourcefulCo
     }
 }
 
-class GradientColorOptionWidget(private val getter: Supplier<State>, private val setter: Consumer<State>) : BaseWidget(SIZE, SIZE) {
+class GradientColorOptionWidget(private val getter: Supplier<OptionState>, private val setter: Consumer<OptionState>) : BaseWidget(SIZE, SIZE) {
     @GenerateCodec
-    data class State(
+    data class OptionState(
         val colors: MutableList<Int> = mutableListOf(),
         var direction: GradientDirection = GradientDirection.RIGHT,
         var speed: Int = 1,
@@ -86,20 +92,19 @@ class GradientColorOptionWidget(private val getter: Supplier<State>, private val
         val actualColors
             get() = when (colors.size) {
                 0, 1 -> colors
-                else if (colors.first() != colors.last()) -> colors.apply { add(colors.first()) }
-                else -> colors
+                else -> if (colors.first() != colors.last()) colors.toMutableList().apply { add(colors.first()) } else colors
             }
 
         companion object {
-            val CODEC: Codec<State> = IconographicCodecs.StateCodec.codec()
+            val CODEC: Codec<OptionState> = IconographicCodecs.OptionStateCodec.codec()
 
-            fun fromString(string: String) = string.readJson<JsonElement>().toData(CODEC) ?: State()
+            fun fromString(string: String) = string.readJson<JsonElement>().toData(CODEC) ?: OptionState()
         }
     }
 
     override fun extractWidgetRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ModSprites.BUTTON, x, y, this.width, this.height)
-        (val actualColors, val direction, val speed) = this.getter.get()
+        val (actualColors, direction, speed) = this.getter.get()
         graphics.animatedGradient(x + 1, y + 1, this.width - 2, this.height - 2, speed.toFloat(), direction) { actualColors }
         this.applyCursor(graphics)
     }
@@ -112,10 +117,13 @@ class GradientColorOptionWidget(private val getter: Supplier<State>, private val
         private val data get() = widget.getter.get()
 
         private var currentColor: Int = 0
-        private val colorState: HsbState = HsbState(HsbColor.fromRgb(data.colors[currentColor])) { color: HsbColor ->
+        private val colorState: HsbState = HsbState(HsbColor.fromRgb(data.colors.getOrElse(0) { TextColor.WHITE })) { color: HsbColor ->
             widget.setter.accept(
                 data.apply {
-                    if (currentColor == colors.size) {
+                    if (colors.isEmpty()) {
+                        colors.add(color.toRgba())
+                        currentColor = 0
+                    } else if (currentColor == colors.size) {
                         colors.add(color.toRgba())
                     } else if (currentColor < colors.size) {
                         colors[currentColor] = color.toRgba()
@@ -129,6 +137,7 @@ class GradientColorOptionWidget(private val getter: Supplier<State>, private val
         private val speed: ListenableState<Int> = ListenableState.of(data.speed).apply {
             registerListener { widget.setter.accept(data.apply { this.speed = it }) }
         }
+        private val presetType: ListenableState<PresetType> = ListenableState.of(if (VisualsConfig.skyBlockColor) PresetType.SKYBLOCK_COLORS else PresetType.MC_COLORS)
 
         private var x = 0
         private var y = 0
@@ -186,13 +195,15 @@ class GradientColorOptionWidget(private val getter: Supplier<State>, private val
                                     graphics.centeredText(McFont.self, "x", ctx.x + 6, ctx.y + 2, ARGB.opaque(TextColor.RED))
                                 }
                                 withCallback {
-                                    widget.setter.accept(
-                                        data.apply {
-                                            colors.removeAt(currentColor)
-                                            currentColor = currentColor.coerceAtMost(data.colors.size - 1)
-                                        },
-                                    )
-                                    rebuildWidgets()
+                                    if (data.colors.isNotEmpty()) {
+                                        widget.setter.accept(
+                                            data.apply {
+                                                colors.removeAt(currentColor.coerceAtMost(colors.size - 1))
+                                                currentColor = currentColor.coerceAtMost(data.colors.size - 1).coerceAtLeast(0)
+                                            },
+                                        )
+                                        rebuildWidgets()
+                                    }
                                 }
                             },
                         )
@@ -228,23 +239,52 @@ class GradientColorOptionWidget(private val getter: Supplier<State>, private val
                         },
                     )
 
-                    // TODO: presets for minecraft colors, skyblock colors & gradients
+                    widget(
+                        ResourcefulConfigOptionUI.dropdown(
+                            Component.empty(),
+                            PresetType.entries,
+                            { this@PresetsOverlay.presetType.get() },
+                            { newValue ->
+                                this@PresetsOverlay.presetType.set(newValue)
+                                rebuildWidgets()
+                            },
+                        ).apply { width = 100 },
+                    )
+
+                    widget(
+                        PresetGridWidget({ presetType.get().colors }) { presetColors, isShift ->
+                            widget.setter.accept(
+                                data.apply {
+                                    if (isShift) {
+                                        this.colors.addAll(presetColors)
+                                    } else {
+                                        this.colors.clear()
+                                        this.colors.addAll(presetColors)
+                                    }
+                                    currentColor = 0
+                                },
+                            )
+                            rebuildWidgets()
+                        }
+                    )
                 }
             }
 
             val windowWidth = this.rectangle.width()
             val windowHeight = this.rectangle.height()
 
-            val x = this.widget.x.coerceAtMost(windowWidth - layout.width - PADDING * 2)
+            val targetX = this.widget.x.coerceAtMost(windowWidth - layout.width - PADDING * 2)
+            val targetY = if (this.widget.y + this.widget.getHeight() + SPACING + layout.height + PADDING * 2 > windowHeight) {
+                this.widget.y - layout.height - PADDING - 2 - SPACING
+            } else {
+                this.widget.y + this.widget.getHeight() + SPACING
+            }
 
-            val y = if (this.widget.y + this.widget.getHeight() + SPACING + layout.height + PADDING * 2 > windowHeight) this.widget.y - layout.height - PADDING * 2 - SPACING
-            else this.widget.y + this.widget.getHeight() + SPACING
-
-            layout.setPosition(x, y + PADDING)
+            layout.setPosition(targetX, targetY + PADDING)
             layout.visitWidgets { widget -> this.addRenderableWidget(widget) }
 
-            this.x = x - PADDING
-            this.y = y
+            this.x = targetX - PADDING
+            this.y = targetY
             this.width = layout.width + PADDING * 2
             this.height = layout.height + PADDING * 2
         }
@@ -268,6 +308,129 @@ class GradientColorOptionWidget(private val getter: Supplier<State>, private val
             this.onClose()
             return false
         }
+    }
+
+    private class PresetGridWidget(
+        private val presetsSupplier: Supplier<List<Pair<List<Int>, String>>>,
+        private val onSelect: (List<Int>, Boolean) -> Unit
+    ) : BaseWidget(100, 30) {
+
+        init {
+            val presets = presetsSupplier.get()
+            val rows = ceil(presets.size / 8.0).toInt().coerceAtLeast(1)
+            val size = (100 - 18) / 8
+            this.height = 6 + rows * size + (rows - 1) * 2
+        }
+
+        override fun extractWidgetRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ModSprites.ACCENT, x, y, width, height)
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ModSprites.BUTTON, x + 1, y + 1, width - 2, height - 2)
+
+            val presets = presetsSupplier.get()
+            val size = (width - 18) / 8
+
+            presets.forEachIndexed { index, [presetColors, name] ->
+                val j = index % 8
+                val k = index / 8
+                val cellX = x + 3 + (j * size) + (2 * j)
+                val cellY = y + 3 + (k * size) + (2 * k)
+
+                val previewColors = when (presetColors.size) {
+                    0, 1 -> presetColors
+                    else -> if (presetColors.first() != presetColors.last()) presetColors.toMutableList().apply { add(presetColors.first()) } else presetColors
+                }
+
+                graphics.animatedGradient(cellX, cellY, size, size, 5.0f, GradientDirection.RIGHT) { previewColors }
+                graphics.outline(cellX, cellY, size, size, 0xFFDDDDDD.toInt())
+
+                if (mouseX >= cellX && mouseX <= cellX + size && mouseY >= cellY && mouseY <= cellY + size) {
+                    graphics.outline(cellX, cellY, size, size, 0xFF000000.toInt())
+
+                    val tooltip = listOf(
+                        Text.of(name) {
+                            textShader = GradientTextShader { presetColors }
+                        },
+                        Text.of("Press shift to append.", TextColor.GRAY),
+                    )
+                    graphics.setComponentTooltipForNextFrame(McFont.self, tooltip, mouseX, mouseY)
+                    this.applyCursor(graphics)
+                }
+            }
+        }
+
+        override fun mouseClicked(event: MouseButtonEvent, bl: Boolean): Boolean {
+            if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
+                val presets = presetsSupplier.get()
+                val size = (width - 18) / 8
+                val mouseX = event.x().toInt()
+                val mouseY = event.y().toInt()
+
+                presets.forEachIndexed { index, [presetColors, _] ->
+                    val j = index % 8
+                    val k = index / 8
+                    val cellX = x + 3 + (j * size) + (2 * j)
+                    val cellY = y + 3 + (k * size) + (2 * k)
+
+                    if (mouseX >= cellX && mouseX <= cellX + size && mouseY >= cellY && mouseY <= cellY + size) {
+                        onSelect(presetColors, McScreen.isShiftDown)
+                        return true
+                    }
+                }
+            }
+            return super.mouseClicked(event, bl)
+        }
+
+        override fun updateWidgetNarration(output: NarrationElementOutput) {}
+    }
+
+    enum class PresetType(val colors: List<Pair<List<Int>, String>>) {
+        MC_COLORS(
+            TextColor.BLACK to "Black",
+            TextColor.DARK_BLUE to "Dark Blue",
+            TextColor.DARK_GREEN to "Dark Green",
+            TextColor.DARK_AQUA to "Dark Aqua",
+            TextColor.DARK_RED to "Dark Red",
+            TextColor.DARK_PURPLE to "Dark Purple",
+            TextColor.GOLD to "Gold",
+            TextColor.GRAY to "Gray",
+            TextColor.DARK_GRAY to "Dark Gray",
+            TextColor.BLUE to "Blue",
+            TextColor.GREEN to "Green",
+            TextColor.AQUA to "Aqua",
+            TextColor.RED to "Red",
+            TextColor.LIGHT_PURPLE to "Light Purple",
+            TextColor.YELLOW to "Yellow",
+            TextColor.WHITE to "White",
+        ),
+        SKYBLOCK_COLORS(
+            SkyBlockColor.BLACK to "Black",
+            SkyBlockColor.DARK_BLUE to "Dark Blue",
+            SkyBlockColor.DARK_GREEN to "Dark Green",
+            SkyBlockColor.DARK_AQUA to "Dark Aqua",
+            SkyBlockColor.DARK_RED to "Dark Red",
+            SkyBlockColor.DARK_PURPLE to "Dark Purple",
+            SkyBlockColor.GOLD to "Gold",
+            SkyBlockColor.GRAY to "Gray",
+            SkyBlockColor.DARK_GRAY to "Dark Gray",
+            SkyBlockColor.BLUE to "Blue",
+            SkyBlockColor.GREEN to "Green",
+            SkyBlockColor.AQUA to "Aqua",
+            SkyBlockColor.RED to "Red",
+            SkyBlockColor.LIGHT_PURPLE to "Light Purple",
+            SkyBlockColor.YELLOW to "Yellow",
+            SkyBlockColor.WHITE to "White",
+        ),
+        GRADIENTS(PrideShader.entries.map { it.getColors() to it.toFormattedName() }),
+        ;
+
+        constructor(vararg colors: Pair<Int, String>) : this(colors.map { [a, b] -> listOf(a) to b })
+
+        private fun toFormattedName(): String {
+            return name.lowercase().split("_").joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
+        }
+
+        private val formatted = toFormattedName()
+        override fun toString(): String = formatted
     }
 
     companion object {

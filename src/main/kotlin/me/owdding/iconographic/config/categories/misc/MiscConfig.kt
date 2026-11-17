@@ -26,41 +26,41 @@ object MiscConfig : CategoryKt("misc"), AutoTranslated {
     val centerEnchantments by autoBoolean(true)
     val stackingProgress by autoBoolean(true)
     val ultimateEnchantmentColor by transform(
-        autoString(GradientColorOptionWidget.State(mutableListOf(DisplayColor.LIGHT_PURPLE)).asJson) {
+        autoString(GradientColorOptionWidget.OptionState(mutableListOf(DisplayColor.LIGHT_PURPLE)).asJson) {
             this.renderer = GradientColorOption.ID
         },
         { it.asJson },
-        { GradientColorOptionWidget.State.fromString(it) },
+        { GradientColorOptionWidget.OptionState.fromString(it) },
     )
     val normalEnchantmentColor by transform(
-        autoString(GradientColorOptionWidget.State(mutableListOf(DisplayColor.BLUE)).asJson) {
+        autoString(GradientColorOptionWidget.OptionState(mutableListOf(DisplayColor.BLUE)).asJson) {
             this.renderer = GradientColorOption.ID
         },
         { it.asJson },
-        { GradientColorOptionWidget.State.fromString(it) },
+        { GradientColorOptionWidget.OptionState.fromString(it) },
     )
 
     val lockedEnchantmentLevelColor by transform(
-        autoString(GradientColorOptionWidget.State(mutableListOf(DisplayColor.GRAY)).asJson) {
+        autoString(GradientColorOptionWidget.OptionState(mutableListOf(DisplayColor.GRAY)).asJson) {
             this.renderer = GradientColorOption.ID
         },
         { it.asJson },
-        { GradientColorOptionWidget.State.fromString(it) },
+        { GradientColorOptionWidget.OptionState.fromString(it) },
     )
 
     val normalEnchantmentLevelColor by transform(
-        autoString(GradientColorOptionWidget.State(mutableListOf(DisplayColor.BLUE)).asJson) {
+        autoString(GradientColorOptionWidget.OptionState(mutableListOf(DisplayColor.BLUE)).asJson) {
             this.renderer = GradientColorOption.ID
         },
         { it.asJson },
-        { GradientColorOptionWidget.State.fromString(it) },
+        { GradientColorOptionWidget.OptionState.fromString(it) },
     )
 
     val maxEnchantmentLevelColor by transform(
-        autoString(GradientColorOptionWidget.State(mutableListOf(DisplayColor.GOLD)).asJson) {
+        autoString(GradientColorOptionWidget.OptionState(mutableListOf(DisplayColor.GOLD)).asJson) {
             this.renderer = GradientColorOption.ID
         },
         { it.asJson },
-        { GradientColorOptionWidget.State.fromString(it) },
+        { GradientColorOptionWidget.OptionState.fromString(it) },
     )
 }

@@ -230,9 +230,9 @@ data object ItemEnchants : TooltipFeature() {
 
     fun fromLevelAndName(
         enchantmentName: String,
-        nameColor: GradientColorOptionWidget.State,
+        nameColor: GradientColorOptionWidget.OptionState,
         level: Int,
-        levelColor: GradientColorOptionWidget.State,
+        levelColor: GradientColorOptionWidget.OptionState,
         roman: Boolean = false,
         stackingProgress: String? = null,
     ): Component {
@@ -287,7 +287,7 @@ data object ItemEnchants : TooltipFeature() {
         }
     }
 
-    private fun MutableComponent.applyGradientConfig(state: GradientColorOptionWidget.State) {
+    private fun MutableComponent.applyGradientConfig(state: GradientColorOptionWidget.OptionState) {
         if (state.actualColors.size > 1) {
             textShader = GradientTextShader({ state.actualColors }, state.direction, state.speed.toFloat())
         } else {
@@ -328,7 +328,7 @@ data object ItemEnchants : TooltipFeature() {
             .append(CLOSE_TAG)
     }
 
-    fun tagFromLevel(level: Int, color: GradientColorOptionWidget.State, roman: Boolean = false): Component {
+    fun tagFromLevel(level: Int, color: GradientColorOptionWidget.OptionState, roman: Boolean = false): Component {
         val levelString = if (roman) {
             if (level >= 4000) "TOO_HIGH_NUMBER"
             else if (level == 0) "O"
