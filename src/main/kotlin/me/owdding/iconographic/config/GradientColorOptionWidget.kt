@@ -355,7 +355,8 @@ class GradientColorOptionWidget(private val getter: Supplier<OptionState>, priva
                         Text.of(name) {
                             textShader = GradientTextShader(presetColors)
                         },
-                        Text.of("Press shift to append.", TextColor.GRAY),
+                        Text.of("Click to override.", TextColor.GRAY),
+                        Text.of("Chift Click to append.", TextColor.GRAY),
                     )
                     graphics.setComponentTooltipForNextFrame(McFont.self, tooltip, mouseX, mouseY)
                     this.applyCursor(graphics)
