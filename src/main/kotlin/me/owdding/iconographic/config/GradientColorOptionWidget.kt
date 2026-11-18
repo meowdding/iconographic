@@ -265,8 +265,18 @@ class GradientColorOptionWidget(private val getter: Supplier<OptionState>, priva
                         PresetGridWidget({ presetType.get().colors }) { presetColors, isShift ->
                             widget.setter.accept(
                                 data.apply {
+                                    val presetColors = presetColors.toMutableList().apply {
+                                        if (last() == first() && this.size > 1) removeLast()
+                                    }
+
                                     if (isShift) {
-                                        this.colors.addAll(presetColors)
+                                        if (this.colors.last() == this.colors.first()) {
+                                            val last = if (this.colors.size == 1) this.colors.first() else this.colors.removeLast()
+                                            this.colors.addAll(presetColors)
+                                            this.colors.add(last)
+                                        } else {
+                                            this.colors.addAll(presetColors)
+                                        }
                                     } else {
                                         this.colors.clear()
                                         this.colors.addAll(presetColors)
