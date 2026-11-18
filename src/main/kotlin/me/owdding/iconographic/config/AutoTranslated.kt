@@ -6,9 +6,9 @@ import com.teamresourceful.resourcefulconfigkt.api.builders.EntriesBuilder
 import com.teamresourceful.resourcefulconfigkt.api.builders.KeyBuilder
 import com.teamresourceful.resourcefulconfigkt.api.builders.NumberBuilder
 import com.teamresourceful.resourcefulconfigkt.api.builders.SelectBuilder
+import com.teamresourceful.resourcefulconfigkt.api.builders.SeparatorBuilder
 import com.teamresourceful.resourcefulconfigkt.api.builders.StringBuilder
 import com.teamresourceful.resourcefulconfigkt.api.builders.TypeBuilder
-import com.teamresourceful.resourcefulconfigkt.api.builders.SeparatorBuilder
 
 @Suppress("unused")
 interface AutoTranslated {

@@ -4,8 +4,10 @@ import me.owdding.iconographic.config.categories.tag.TagConfig
 import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.TooltipFeature
 import me.owdding.iconographic.system.TooltipTag
+import me.owdding.iconographic.utils.RemoteStrings
 import me.owdding.iconographic.utils.Stars
 import me.owdding.iconographic.utils.chat.DisplayColor
+import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
@@ -19,7 +21,7 @@ data object StarsFeature : TooltipFeature() {
     override val priority: Int = 2
 
     private val starIcons = setOf("✪", "➊", "➋", "➌", "➍", "➎")
-    private val starIconRegex = Regex("\\s*(?:${starIcons.joinToString("|")})+")
+    private val starIconRegex by RemoteStrings.resolve().regex("\\s*(?:${starIcons.joinToString("|")})+")
 
     private val colors = listOf(DisplayColor.GOLD, DisplayColor.LIGHT_PURPLE, DisplayColor.AQUA)
 

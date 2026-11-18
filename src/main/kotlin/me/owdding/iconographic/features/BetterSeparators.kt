@@ -9,12 +9,13 @@ import me.owdding.iconographic.render.SeparatorRenderer
 import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.Result
 import me.owdding.iconographic.system.TooltipFeature
+import me.owdding.iconographic.utils.RemoteStrings
+import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.FormattedText
 import net.minecraft.network.chat.Style
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.utils.regex.RegexUtils.match
-import tech.thatgravyboat.skyblockapi.utils.regex.component.ComponentRegex
 import tech.thatgravyboat.skyblockapi.utils.regex.component.findGroup
 import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.stripped
 import tech.thatgravyboat.skyblockapi.utils.text.TextStyle.strikethrough
@@ -26,7 +27,7 @@ data object BetterSeparators : TooltipFeature() {
     override val enabled: Boolean get() = VisualsConfig.separators
     override val priority: Int = 10
 
-    private val namedSeparatorComponentRegex = ComponentRegex("=====\\[ (?<name>.*) ]=====")
+    private val namedSeparatorComponentRegex by RemoteStrings.resolve().componentRegex("=====\\[ (?<name>.*) ]=====")
     private val namedSeparatorRegex = namedSeparatorComponentRegex.regex()
 
     override fun ItemStack.modifyEntries(list: MutableList<TooltipLine>, previousResult: Result?): Result = withComponentMerger(list) {

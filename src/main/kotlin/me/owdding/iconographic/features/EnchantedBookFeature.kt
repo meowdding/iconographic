@@ -6,6 +6,8 @@ import me.owdding.iconographic.config.categories.misc.MiscConfig
 import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.Result
 import me.owdding.iconographic.system.TooltipFeature
+import me.owdding.iconographic.utils.RemoteStrings
+import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
@@ -26,7 +28,7 @@ data object EnchantedBookFeature : TooltipFeature() {
 
     const val ANVIL_LINE: String = "Combinable in Anvil"
 
-    val rngMeterCustomName = Regex("Enchanted Book \\((?<bookName>.*)\\)")
+    private val rngMeterCustomName by RemoteStrings.resolve().regex("Enchanted Book \\((?<bookName>.*)\\)")
 
     override fun ItemStack.applies(): Boolean = DataTypes.SKYBLOCK_ID()?.isEnchantment == true
 

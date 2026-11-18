@@ -7,6 +7,8 @@ import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.Result
 import me.owdding.iconographic.system.TooltipFeature
 import me.owdding.iconographic.system.TooltipTag
+import me.owdding.iconographic.utils.RemoteStrings
+import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
 import tech.thatgravyboat.skyblockapi.utils.regex.RegexUtils.match
@@ -18,7 +20,7 @@ data object CategoryTags : TooltipFeature() {
     override val enabled: Boolean get() = TagConfig.category
     override val priority: Int = 0
 
-    private val idRegex = Regex("(?i)^(?<name>.+?)\\s*\\(\\s*ID\\s+(?<id>[A-Z0-9]+)\\s*\\)$")
+    private val idRegex by RemoteStrings.resolve().regex("(?i)^(?<name>.+?)\\s*\\(\\s*ID\\s+(?<id>[A-Z0-9]+)\\s*\\)$")
 
     override fun ItemStack.applies(): Boolean = (DataTypes.SKYBLOCK_ID() != null)
 

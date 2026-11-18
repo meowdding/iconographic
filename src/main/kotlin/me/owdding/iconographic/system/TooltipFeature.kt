@@ -1,11 +1,11 @@
 package me.owdding.iconographic.system
 
-import me.owdding.ktmodules.AutoCollect
 import me.owdding.iconographic.ComponentAlignment
 import me.owdding.iconographic.ComponentLike
 import me.owdding.iconographic.TooltipLine
 import me.owdding.iconographic.utils.ComponentLineListMerger
 import me.owdding.iconographic.utils.ListMerger
+import me.owdding.ktmodules.AutoCollect
 import net.minecraft.network.chat.CommonComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent

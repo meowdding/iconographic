@@ -8,6 +8,8 @@ import me.owdding.iconographic.render.SeparatorRenderer
 import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.Result
 import me.owdding.iconographic.system.TooltipFeature
+import me.owdding.iconographic.utils.RemoteStrings
+import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.helpers.McScreen
 import tech.thatgravyboat.skyblockapi.utils.extentions.parseFormattedFloat
@@ -18,8 +20,9 @@ data object SkillLevelBar : TooltipFeature() {
     override val enabled: Boolean get() = MiscConfig.skillLevelBar
     override val priority: Int = 10
 
-    private val progressRegex = Regex("^(?:Progress(?: to (?:Level|Mastery) \\S+)?: .*|Max Skill level reached!)$")
-    private val titleRegex = Regex("Your Skills|Dungeoneering|.+ Skill|.+ Class Perks")
+    private val group = RemoteStrings.resolve()
+    private val progressRegex by group.regex("^(?:Progress(?: to (?:Level|Mastery) \\S+)?: .*|Max Skill level reached!)$")
+    private val titleRegex by group.regex("Your Skills|Dungeoneering|.+ Skill|.+ Class Perks")
 
     // TODO: abstract petlevelline away as im reusing it (for drill fuel too)
 

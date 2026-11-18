@@ -9,11 +9,13 @@ import me.owdding.iconographic.font
 import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.Result
 import me.owdding.iconographic.system.TooltipFeature
+import me.owdding.iconographic.utils.RemoteStrings
 import me.owdding.iconographic.utils.chat.DisplayColor
 import me.owdding.ktmodules.Module
 import me.owdding.lib.rendering.text.builtin.GradientTextShader
 import me.owdding.lib.rendering.text.textShader
 import me.owdding.lib.repo.EnchantmentRepoData
+import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
@@ -28,7 +30,6 @@ import tech.thatgravyboat.skyblockapi.api.remote.api.SkyBlockId.Companion.getSky
 import tech.thatgravyboat.skyblockapi.helpers.McFont
 import tech.thatgravyboat.skyblockapi.utils.extentions.parseRomanOrArabic
 import tech.thatgravyboat.skyblockapi.utils.extentions.toRomanNumeral
-import tech.thatgravyboat.skyblockapi.utils.regex.component.ComponentRegex
 import tech.thatgravyboat.skyblockapi.utils.text.Text
 import tech.thatgravyboat.skyblockapi.utils.text.TextBuilder.append
 import tech.thatgravyboat.skyblockapi.utils.text.TextColor
@@ -42,8 +43,9 @@ data object ItemEnchants : TooltipFeature() {
     override val enabled: Boolean get() = MiscConfig.itemEnchants
     override val priority: Int = 15
 
-    private val singleEnchantMatcher = ComponentRegex("(?<=^|, )(?<name>[A-Z][A-Za-z-]* (?:[A-Za-z-]* )*)(?<lvl>[MDCLXVI]+)(?<stacking> [\\d.,]+)?,?\\b")
-    private val enchantLineRegex = ComponentRegex("(?:[A-Z][A-Za-z-]* (?:[A-Za-z-]* )*[MDCLXVI]+(?:, )?)+(?: [\\d.,+]+)?")
+    private val group = RemoteStrings.resolve()
+    private val singleEnchantMatcher by group.componentRegex("(?<=^|, )(?<name>[A-Z][A-Za-z'-]* (?:[A-Za-z'-]* )*)(?<lvl>[MDCLXVI]+)(?<stacking> [\\d.,]+)?,?\\b")
+    private val enchantLineRegex by group.componentRegex("(?:[A-Z][A-Za-z'-]* (?:[A-Za-z'-]* )*[MDCLXVI]+(?:, )?)+(?: [\\d.,+]+)?")
 
     private fun Component.isEnchantmentLine() = enchantLineRegex.matches(this)
 

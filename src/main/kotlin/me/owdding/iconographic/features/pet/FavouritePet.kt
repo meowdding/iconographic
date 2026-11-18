@@ -1,12 +1,13 @@
 package me.owdding.iconographic.features.pet
 
-import me.owdding.iconographic.config.categories.misc.MiscConfig
 import me.owdding.iconographic.config.categories.pets.PetsConfig
 import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.TooltipFeatureWithContext
 import me.owdding.iconographic.system.TooltipTag
+import me.owdding.iconographic.utils.RemoteStrings
 import me.owdding.iconographic.utils.Stars
 import me.owdding.iconographic.utils.chat.DisplayColor
+import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
@@ -21,7 +22,7 @@ data object FavouritePet : TooltipFeatureWithContext<AtomicBoolean>() {
 
     override val priority: Int = 2
 
-    val starIconRegex = Regex("⭐ (?<name>.+?)")
+    private val starIconRegex by RemoteStrings.resolve().regex("⭐ (?<name>.+?)")
 
     override fun createContext(): AtomicBoolean {
         return AtomicBoolean(false)

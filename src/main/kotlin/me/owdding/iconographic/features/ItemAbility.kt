@@ -8,13 +8,14 @@ import me.owdding.iconographic.font
 import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.Result
 import me.owdding.iconographic.system.TooltipFeature
+import me.owdding.iconographic.utils.RemoteStrings
+import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
 import tech.thatgravyboat.skyblockapi.utils.regex.component.match
-import tech.thatgravyboat.skyblockapi.utils.regex.component.toComponentRegex
 import tech.thatgravyboat.skyblockapi.utils.text.Text
 import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.stripped
 
@@ -23,7 +24,7 @@ data object ItemAbility : TooltipFeature() {
     override val enabled: Boolean get() = MiscConfig.alignedItemAbility || MiscConfig.clickIcons != Style.OFF
     override val priority: Int = 20
 
-    private val abilityRegex = Regex("(?<name>.*Ability: .+?)\\s{2,}(?<key>[A-Z ]+ CLICK)").toComponentRegex()
+    private val abilityRegex by RemoteStrings.resolve().componentRegex("(?<name>.*Ability: .+?)\\s{2,}(?<key>[A-Z ]+ CLICK)")
 
     override fun ItemStack.applies() = DataTypes.SKYBLOCK_ID() != null
 

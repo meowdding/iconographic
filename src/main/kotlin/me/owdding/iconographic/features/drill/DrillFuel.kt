@@ -1,19 +1,20 @@
 package me.owdding.iconographic.features.drill
 
-import me.owdding.lib.extensions.shorten
 import me.owdding.iconographic.ExtractableTooltipLine
-import me.owdding.iconographic.TooltipLine
 import me.owdding.iconographic.Iconographic.id
+import me.owdding.iconographic.TooltipLine
 import me.owdding.iconographic.config.categories.mining.MiningConfig
-import me.owdding.iconographic.config.categories.misc.MiscConfig
 import me.owdding.iconographic.font
 import me.owdding.iconographic.lines.SpacerLine
 import me.owdding.iconographic.render.SeparatorRenderer
 import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.Result
 import me.owdding.iconographic.system.TooltipFeature
+import me.owdding.iconographic.utils.RemoteStrings
 import me.owdding.iconographic.utils.chat.ChatUtils
 import me.owdding.iconographic.utils.chat.DisplayColor
+import me.owdding.lib.extensions.shorten
+import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.renderer.RenderPipelines
@@ -37,8 +38,8 @@ data object DrillFuel : TooltipFeature() {
     override val enabled: Boolean get() = MiningConfig.drillFuel
     override val priority: Int = 10
 
-    val DARK_GREEN get() = ARGB.opaque(DisplayColor.DARK_GREEN)
-    val regex = Regex("^Fuel: (?<current>[\\d,.]+[kKmMbB]?)/(?<max>[\\d,.]+[kKmMbB]?)$")
+    private val DARK_GREEN get() = ARGB.opaque(DisplayColor.DARK_GREEN)
+    private val regex by RemoteStrings.resolve().regex("^Fuel: (?<current>[\\d,.]+[kKmMbB]?)/(?<max>[\\d,.]+[kKmMbB]?)$")
 
     override fun ItemStack.modifyEntries(list: MutableList<TooltipLine>, previousResult: Result?): Result = withComponentMerger(list) {
         if (!hasNext { it.stripped.matches(regex) }) return@withComponentMerger Result.unmodified

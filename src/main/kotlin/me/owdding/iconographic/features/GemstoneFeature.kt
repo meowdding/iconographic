@@ -23,7 +23,6 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.util.ARGB
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.api.data.SkyBlockRarity
-import tech.thatgravyboat.skyblockapi.api.datatype.DataType
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
 import tech.thatgravyboat.skyblockapi.api.datatype.defaults.GemstoneQuality
 import tech.thatgravyboat.skyblockapi.api.datatype.defaults.GemstoneSlot

@@ -6,14 +6,15 @@ import me.owdding.iconographic.lines.SpacerLine
 import me.owdding.iconographic.system.RegisterFeature
 import me.owdding.iconographic.system.Result
 import me.owdding.iconographic.system.TooltipFeature
+import me.owdding.iconographic.utils.RemoteStrings
 import me.owdding.iconographic.utils.chat.ChatUtils
 import me.owdding.lib.utils.MemoizeUtil
+import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.network.chat.CommonComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.utils.extentions.toFormattedName
 import tech.thatgravyboat.skyblockapi.utils.regex.component.match
-import tech.thatgravyboat.skyblockapi.utils.regex.component.toComponentRegex
 import tech.thatgravyboat.skyblockapi.utils.text.Text
 import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.stripped
 import tech.thatgravyboat.skyblockapi.utils.text.TextStyle.font
@@ -31,7 +32,7 @@ data object ClickFeature : TooltipFeature() {
     private val right = Text.of(">") { this.font = ChatUtils.clicks }
     private val middle = Text.of("v") { this.font = ChatUtils.clicks }
     private val mouseAll = Text.of("^") { this.font = ChatUtils.clicks }
-    private val clickRegex = Regex("(?i)(?<key>.*?-click|Click)(?<text> (?:to|for) .*)").toComponentRegex()
+    private val clickRegex by RemoteStrings.resolve().componentRegex("(?i)(?<key>.*?-click|Click)(?<text> (?:to|for) .*)")
 
     val lookup = MemoizeUtil.memoize { key: String, isInline: Boolean ->
         val keys = key.split(" ").mapNotNull { key ->
