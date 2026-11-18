@@ -24,6 +24,7 @@ import earth.terrarium.olympus.client.utils.ListenableState
 import me.owdding.iconographic.Iconographic
 import me.owdding.iconographic.config.categories.visuals.VisualsConfig
 import me.owdding.iconographic.generated.IconographicCodecs
+import me.owdding.iconographic.utils.extensions.rightPad
 import me.owdding.ktcodecs.GenerateCodec
 import me.owdding.lib.builder.LayoutFactory
 import me.owdding.lib.rendering.GuiRenderTypes.animatedGradient
@@ -320,11 +321,10 @@ class GradientColorOptionWidget(private val getter: Supplier<OptionState>, priva
     }
 
     private class PresetGridWidget(
-        private val presetsSupplier: Supplier<List<Pair<List<Int>, String>>>,
+        private val presetsSupplier: Supplier<List<Pair<GradientProvider, String>>>,
         private val onSelect: (List<Int>, Boolean) -> Unit
     ) : BaseWidget(100, 30) {
 
-        private val provider = Colors()
         init {
             val presets = presetsSupplier.get()
             val rows = ceil(presets.size / 8.0).toInt().coerceAtLeast(1)
@@ -345,12 +345,7 @@ class GradientColorOptionWidget(private val getter: Supplier<OptionState>, priva
                 val cellX = x + 3 + (j * size) + (2 * j)
                 val cellY = y + 3 + (k * size) + (2 * k)
 
-                val previewColors = when (presetColors.size) {
-                    0, 1 -> presetColors
-                    else -> if (presetColors.first() != presetColors.last()) presetColors.toMutableList().apply { add(presetColors.first()) } else presetColors
-                }
-
-                graphics.animatedGradient(cellX, cellY, size, size, 5.0f, GradientDirection.RIGHT, provider(previewColors))
+                graphics.animatedGradient(cellX, cellY, size, size, 5.0f, GradientDirection.RIGHT, presetColors)
                 graphics.outline(cellX, cellY, size, size, 0xFFDDDDDD.toInt())
 
                 if (mouseX >= cellX && mouseX <= cellX + size && mouseY >= cellY && mouseY <= cellY + size) {
@@ -358,7 +353,7 @@ class GradientColorOptionWidget(private val getter: Supplier<OptionState>, priva
 
                     val tooltip = listOf(
                         Text.of(name) {
-                            textShader = GradientTextShader { presetColors }
+                            textShader = GradientTextShader(presetColors)
                         },
                         Text.of("Press shift to append.", TextColor.GRAY),
                     )
@@ -382,7 +377,7 @@ class GradientColorOptionWidget(private val getter: Supplier<OptionState>, priva
                     val cellY = y + 3 + (k * size) + (2 * k)
 
                     if (mouseX >= cellX && mouseX <= cellX + size && mouseY >= cellY && mouseY <= cellY + size) {
-                        onSelect(presetColors, McScreen.isShiftDown)
+                        onSelect(presetColors.getColors(), McScreen.isShiftDown)
                         return true
                     }
                 }
@@ -393,7 +388,7 @@ class GradientColorOptionWidget(private val getter: Supplier<OptionState>, priva
         override fun updateWidgetNarration(output: NarrationElementOutput) {}
     }
 
-    enum class PresetType(val colors: List<Pair<List<Int>, String>>) {
+    enum class PresetType(val colors: List<Pair<GradientProvider, String>>) {
         MC_COLORS(
             TextColor.BLACK to "Black",
             TextColor.DARK_BLUE to "Dark Blue",
@@ -430,10 +425,10 @@ class GradientColorOptionWidget(private val getter: Supplier<OptionState>, priva
             SkyBlockColor.YELLOW to "Yellow",
             SkyBlockColor.WHITE to "White",
         ),
-        GRADIENTS(PrideShader.entries.map { it.getColors() to it.toFormattedName() }),
+        GRADIENTS(PrideShader.entries.map { it to it.toFormattedName() }),
         ;
 
-        constructor(vararg colors: Pair<Int, String>) : this(colors.map { [a, b] -> listOf(a) to b })
+        constructor(vararg colors: Pair<Int, String>) : this(colors.map { [a, b] -> GradientProvider { listOf(a, a) } to b })
 
         private fun toFormattedName(): String {
             return name.lowercase().split("_").joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
