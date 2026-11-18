@@ -31,6 +31,7 @@ import me.owdding.lib.rendering.text.PrideShader
 import me.owdding.lib.rendering.text.builtin.GradientTextShader
 import me.owdding.lib.rendering.text.textShader
 import me.owdding.lib.utils.GradientDirection
+import me.owdding.lib.utils.GradientProvider
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.narration.NarrationElementOutput
@@ -81,7 +82,16 @@ class GradientColorOption(val element: ResourcefulConfigElement) : ResourcefulCo
     }
 }
 
+private class Colors : GradientProvider {
+    private var _colors: List<Int> = emptyList()
+    operator fun invoke(colors: List<Int>) = apply { this._colors = colors }
+    override fun getColors(): List<Int> = _colors
+}
+
+
 class GradientColorOptionWidget(private val getter: Supplier<OptionState>, private val setter: Consumer<OptionState>) : BaseWidget(SIZE, SIZE) {
+    private val provider = Colors()
+
     @GenerateCodec
     data class OptionState(
         val colors: MutableList<Int> = mutableListOf(),
@@ -105,7 +115,7 @@ class GradientColorOptionWidget(private val getter: Supplier<OptionState>, priva
     override fun extractWidgetRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ModSprites.BUTTON, x, y, this.width, this.height)
         val (actualColors, direction, speed) = this.getter.get()
-        graphics.animatedGradient(x + 1, y + 1, this.width - 2, this.height - 2, speed.toFloat(), direction) { actualColors }
+        graphics.animatedGradient(x + 1, y + 1, this.width - 2, this.height - 2, speed.toFloat(), direction, provider(actualColors))
         this.applyCursor(graphics)
     }
 
@@ -114,6 +124,7 @@ class GradientColorOptionWidget(private val getter: Supplier<OptionState>, priva
     }
 
     private class PresetsOverlay(private val widget: GradientColorOptionWidget) : OverlayScreen(McScreen.self!!), CloseableScreen {
+        private val provider = Colors()
         private val data get() = widget.getter.get()
 
         private var currentColor: Int = 0
@@ -230,9 +241,7 @@ class GradientColorOptionWidget(private val getter: Supplier<OptionState>, priva
                     widget(
                         object : AbstractWidget(0, 0, 100, 16, CommonText.EMPTY) {
                             override fun extractWidgetRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, a: Float) {
-                                graphics.animatedGradient(x, y, this.width, this.height, speed.get().toFloat(), direction.get()) {
-                                    data.actualColors
-                                }
+                                graphics.animatedGradient(x, y, this.width, this.height, speed.get().toFloat(), direction.get(), provider(data.actualColors))
                             }
 
                             override fun updateWidgetNarration(output: NarrationElementOutput) {}
@@ -315,6 +324,7 @@ class GradientColorOptionWidget(private val getter: Supplier<OptionState>, priva
         private val onSelect: (List<Int>, Boolean) -> Unit
     ) : BaseWidget(100, 30) {
 
+        private val provider = Colors()
         init {
             val presets = presetsSupplier.get()
             val rows = ceil(presets.size / 8.0).toInt().coerceAtLeast(1)
@@ -340,7 +350,7 @@ class GradientColorOptionWidget(private val getter: Supplier<OptionState>, priva
                     else -> if (presetColors.first() != presetColors.last()) presetColors.toMutableList().apply { add(presetColors.first()) } else presetColors
                 }
 
-                graphics.animatedGradient(cellX, cellY, size, size, 5.0f, GradientDirection.RIGHT) { previewColors }
+                graphics.animatedGradient(cellX, cellY, size, size, 5.0f, GradientDirection.RIGHT, provider(previewColors))
                 graphics.outline(cellX, cellY, size, size, 0xFFDDDDDD.toInt())
 
                 if (mouseX >= cellX && mouseX <= cellX + size && mouseY >= cellY && mouseY <= cellY + size) {
