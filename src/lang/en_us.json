@@ -255,6 +255,26 @@
         "stackingProgress": {
           "@value": "Stacking Progress",
           "desc": "Enables showing the progress of stacking enchantments"
+        },
+        "ultimateEnchantmentColor": {
+          "@value": "Ultimate Name Color",
+          "desc": "The color of the ultimate enchantment text/background, depending on \"Name Background\""
+        },
+        "normalEnchantmentColor": {
+          "@value": "Normal Name Color",
+          "desc": "The color of normal enchantment text/background, depending on \"Name Background\""
+        },
+        "lockedEnchantmentLevelColor": {
+          "@value": "Locked Level Color",
+          "desc": "The color of the background of the level when the enchantment isn't unlocked."
+        },
+        "normalEnchantmentLevelColor": {
+          "@value": "Normal Level Color",
+          "desc": "The color of the background of the level when the enchantment is unlocked but not maxed."
+        },
+        "maxEnchantmentLevelColor": {
+          "@value": "Max Level Color",
+          "desc": "The color of the background of the level when the enchantment is maxed."
         }
       }
     },
