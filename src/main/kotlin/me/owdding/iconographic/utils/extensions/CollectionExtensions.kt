@@ -37,3 +37,14 @@ fun <Type, NumberType : Number> Iterable<Type>.doubleIterate(
 
     return firstVar to secondVar
 }
+
+fun <Type> List<Type>.rightPad(size: Int, element: () -> Type): MutableList<Type> {
+    if (this !is MutableList<Type>) {
+        return this.toMutableList().rightPad(size, element)
+    }
+
+    while (this.size < size) {
+        this.add(this.lastIndex + 1, element())
+    }
+    return this
+}

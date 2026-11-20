@@ -3,6 +3,7 @@ package me.owdding.iconographic.features
 import me.owdding.iconographic.ExtractableTooltipLine
 import me.owdding.iconographic.Iconographic.id
 import me.owdding.iconographic.TooltipLine
+import me.owdding.iconographic.config.GradientColorOptionWidget
 import me.owdding.iconographic.config.categories.misc.MiscConfig
 import me.owdding.iconographic.font
 import me.owdding.iconographic.system.RegisterFeature
@@ -11,14 +12,15 @@ import me.owdding.iconographic.system.TooltipFeature
 import me.owdding.iconographic.utils.RemoteStrings
 import me.owdding.iconographic.utils.chat.DisplayColor
 import me.owdding.ktmodules.Module
-import me.owdding.lib.rendering.text.TextShader
-import me.owdding.lib.rendering.text.withTextShader
+import me.owdding.lib.rendering.text.builtin.GradientTextShader
+import me.owdding.lib.rendering.text.textShader
 import me.owdding.lib.repo.EnchantmentRepoData
 import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.FontDescription
+import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Style
 import net.minecraft.util.ARGB
 import net.minecraft.world.item.ItemStack
@@ -28,6 +30,8 @@ import tech.thatgravyboat.skyblockapi.api.remote.api.SkyBlockId.Companion.getSky
 import tech.thatgravyboat.skyblockapi.helpers.McFont
 import tech.thatgravyboat.skyblockapi.utils.extentions.parseRomanOrArabic
 import tech.thatgravyboat.skyblockapi.utils.extentions.toRomanNumeral
+import tech.thatgravyboat.skyblockapi.utils.text.Text
+import tech.thatgravyboat.skyblockapi.utils.text.TextBuilder.append
 import tech.thatgravyboat.skyblockapi.utils.text.TextColor
 import tech.thatgravyboat.skyblockapi.utils.text.TextStyle.color
 import tech.thatgravyboat.skyblockapi.utils.text.TextUtils.isEmpty
@@ -103,16 +107,16 @@ data object ItemEnchants : TooltipFeature() {
         val ultimate: Boolean,
         val isMaxed: Boolean,
         val stackingProgress: String? = null,
-        var description: MutableList<Component> = mutableListOf()
+        var description: MutableList<Component> = mutableListOf(),
     ) {
         fun toComponent() = fromLevelAndName(
             enchantmentName = enchantment,
-            nameColor = if (ultimate) DisplayColor.LIGHT_PURPLE else DisplayColor.BLUE,
+            nameColor = if (ultimate) MiscConfig.ultimateEnchantmentColor else MiscConfig.normalEnchantmentColor,
             level = level,
             levelColor = when {
-                !unlocked -> DisplayColor.GRAY
-                isMaxed -> DisplayColor.GOLD
-                else -> DisplayColor.BLUE
+                !unlocked -> MiscConfig.lockedEnchantmentLevelColor
+                isMaxed -> MiscConfig.maxEnchantmentLevelColor
+                else -> MiscConfig.normalEnchantmentLevelColor
             },
             roman = MiscConfig.romanEnchant,
             stackingProgress = stackingProgress,
@@ -152,6 +156,7 @@ data object ItemEnchants : TooltipFeature() {
         override fun getWidth(font: Font): Int = lines.maxOf { line ->
             line.sumOf { font.width(it) } + (line.size - 1) * HORIZONTAL_PADDING + 2 * BORDER
         }
+
         override fun getHeight(font: Font): Int = lines.size * (height + VERTICAL_PADDING) - VERTICAL_PADDING + 2 * BORDER
     }
 
@@ -227,33 +232,26 @@ data object ItemEnchants : TooltipFeature() {
 
     fun fromLevelAndName(
         enchantmentName: String,
-        nameColor: Int,
+        nameColor: GradientColorOptionWidget.OptionState,
         level: Int,
-        levelColor: Int,
+        levelColor: GradientColorOptionWidget.OptionState,
         roman: Boolean = false,
         stackingProgress: String? = null,
-        shader: TextShader? = null,
     ): Component {
-        val levelTag = tagFromLevel(level, levelColor, roman, shader)
-        val stackingProgress = tagFromStackingProgress(stackingProgress, shader)
+        val levelTag = tagFromLevel(level, levelColor, roman)
+        val stackingProgress = tagFromStackingProgress(stackingProgress)
 
         if (!MiscConfig.enchantNameBackground) {
-            return Component.literal(enchantmentName)
-                .withStyle(
-                    Style.EMPTY
-                        .withFont(font())
-                        .withColor(nameColor)
-                        .withBold(false)
-                        .withTextShader(null),
-                )
-                .append(space(2))
-                .append(levelTag)
-                .apply {
-                    if (stackingProgress != null) {
-                        append(space(2)).
-                            append(stackingProgress)
-                    }
+            return Text.of(enchantmentName) {
+                withStyle(Style.EMPTY.withFont(font()))
+                applyGradientConfig(nameColor)
+
+                append(space(2))
+                append(levelTag)
+                if (stackingProgress != null) {
+                    append(space(2)).append(stackingProgress)
                 }
+            }
         }
 
         val nameComponent = Component.literal(enchantmentName)
@@ -263,7 +261,6 @@ data object ItemEnchants : TooltipFeature() {
                     .withFont(font())
                     .withColor(DisplayColor.WHITE)
                     .withBold(false)
-                    .withTextShader(null)
             )
         val innerTextWidth = McFont.width(nameComponent) + 2
         val textBackground = buildString {
@@ -272,41 +269,46 @@ data object ItemEnchants : TooltipFeature() {
             append(space(-innerTextWidth))
         }
 
-        return Component.literal(textBackground)
-            .withStyle(
-                Style.EMPTY
-                    .withFont(font())
-                    .withColor(nameColor)
-                    .withTextShader(shader)
-            )
-            .append(nameComponent)
-            .append(space(2))
-            .append(MID_TAG)
-            .append(levelTag)
-            .apply {
-                if (stackingProgress != null) {
-                    append(space(-1))
-                    append(
-                        Component.literal(background(2))
-                            .append(MID_TAG)
-                            .withColor(levelColor)
-                    )
-                    append(stackingProgress)
+        return Text.of(textBackground) {
+            withStyle(Style.EMPTY.withFont(font()))
+            applyGradientConfig(nameColor)
+
+            append(nameComponent)
+            append(space(2))
+            append(MID_TAG)
+            append(levelTag)
+
+            if (stackingProgress != null) {
+                append(space(-1))
+                append {
+                    applyGradientConfig(levelColor)
+                    background(2)
                 }
+                append(stackingProgress)
             }
+        }
     }
 
-    fun tagFromStackingProgress(progress: String?, shader: TextShader? = null): Component? {
+    private fun MutableComponent.applyGradientConfig(state: GradientColorOptionWidget.OptionState) {
+        if (state.actualColors.size > 1) {
+            textShader = GradientTextShader({ state.actualColors }, state.direction, state.speed.toFloat())
+        } else {
+            color = state.colors.first()
+        }
+    }
+
+    // TODO: custom colors
+    fun tagFromStackingProgress(progress: String?): Component? {
         if (progress == null || !MiscConfig.stackingProgress) return null
         val shouldBackground = MiscConfig.enchantNameBackground
         val textColor = if (shouldBackground) DisplayColor.WHITE else DisplayColor.DARK_GRAY
 
         val innerText = Component.literal(progress)
-            .withStyle(Style.EMPTY
-                .withShadowColor(ARGB.scaleRGB(0xbfffffff.toInt(), 0.25f))
-                .withFont(font())
-                .withColor(textColor)
-                .withTextShader(shader)
+            .withStyle(
+                Style.EMPTY
+                    .withShadowColor(ARGB.scaleRGB(0xbfffffff.toInt(), 0.25f))
+                    .withFont(font())
+                    .withColor(textColor),
             )
 
         if (!shouldBackground) {
@@ -322,14 +324,13 @@ data object ItemEnchants : TooltipFeature() {
             .withStyle(
                 Style.EMPTY
                     .withFont(font())
-                    .withColor(DisplayColor.DARK_GRAY)
-                    .withTextShader(shader)
+                    .withColor(DisplayColor.DARK_GRAY),
             )
             .append(innerText)
             .append(CLOSE_TAG)
     }
 
-    fun tagFromLevel(level: Int, color: Int, roman: Boolean = false, shader: TextShader? = null): Component {
+    fun tagFromLevel(level: Int, color: GradientColorOptionWidget.OptionState, roman: Boolean = false): Component {
         val levelString = if (roman) {
             if (level >= 4000) "TOO_HIGH_NUMBER"
             else if (level == 0) "O"
@@ -341,7 +342,6 @@ data object ItemEnchants : TooltipFeature() {
                     .withShadowColor(ARGB.scaleRGB(0xbfffffff.toInt(), 0.25f))
                     .withFont(font())
                     .withColor(DisplayColor.WHITE)
-                    .withTextShader(null)
             )
 
         val innerTextWidth = McFont.width(innerText)
@@ -351,14 +351,12 @@ data object ItemEnchants : TooltipFeature() {
             append(space(-innerTextWidth))
         }
 
-        return Component.literal(textBackground)
-            .withStyle(
-                Style.EMPTY
-                    .withFont(font())
-                    .withColor(color)
-                    .withTextShader(shader)
-            )
-            .append(innerText)
-            .append(CLOSE_TAG)
+        return Text.of(textBackground) {
+            withStyle(Style.EMPTY.withFont(font()))
+            applyGradientConfig(color)
+
+            append(innerText)
+            append(CLOSE_TAG)
+        }
     }
 }
