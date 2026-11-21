@@ -91,7 +91,5 @@ data object ItemAbility : TooltipFeature() {
             val baseWidth = font.width(nameComponent) + font.width(keyComponent)
             return baseWidth + if (MiscConfig.alignedItemAbility) 15 else font.width("  ")
         }
-
-        override fun getHeight(font: Font): Int = font.lineHeight
     }
 }

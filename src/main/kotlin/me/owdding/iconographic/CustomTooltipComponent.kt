@@ -63,7 +63,7 @@ interface ExtractableTooltipLine : TooltipLine {
 
 interface TooltipLine {
     fun getWidth(font: Font): Int
-    fun getHeight(font: Font): Int
+    fun getHeight(font: Font): Int = 10
 
     companion object {
         fun TooltipLine.asComponentOrNull() = when (this) {
@@ -145,10 +145,6 @@ data class ComponentLike(
 
     override fun getWidth(font: Font): Int {
         return width
-    }
-
-    override fun getHeight(font: Font): Int {
-        return font.lineHeight
     }
 
     override fun extract(graphics: GuiGraphicsExtractor, totalWidth: Int, x: Int, y: Int) {

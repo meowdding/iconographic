@@ -138,8 +138,6 @@ data class StatLine(
         return font.width(statIcon) + 3 + font.width(statName) + 10 + font.width(completeStatValue) + if (showStatIds) 50 else 0
     }
 
-    override fun getHeight(font: Font): Int = font.lineHeight
-
     override fun getSideWidth(font: Font): Int {
         if (!isSide) return 0
         return extraValue?.let { font.width(it) } ?: 0
