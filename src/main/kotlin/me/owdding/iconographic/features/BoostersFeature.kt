@@ -96,15 +96,15 @@ data object BoostersFeature : TooltipFeature() {
             append("Boosters")
         }
 
-        originalMerger.add(SpacerLine(height = 3))
+        originalMerger.add(SpacerLine(height = 2))
         originalMerger.add(ComponentLike(headerComponent, ComponentAlignment.Center, lines = true))
-        originalMerger.add(SpacerLine(height = 4))
+        originalMerger.add(SpacerLine(height = 1))
 
         originalMerger.add(BoostersSlotLine(parsedSlots))
 
-        originalMerger.add(SpacerLine(height = 4))
+        originalMerger.add(SpacerLine(height = 1))
         originalMerger.add(SeparatorRenderer)
-        originalMerger.add(SpacerLine(height = 3))
+        originalMerger.add(SpacerLine(height = 2))
 
         Result.modified
     }
