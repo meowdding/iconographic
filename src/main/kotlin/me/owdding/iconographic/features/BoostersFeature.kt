@@ -114,7 +114,7 @@ data object BoostersFeature : TooltipFeature() {
     data class BoostersSlotLine(val slots: List<ParsedSlot>) : ExtractableTooltipLine {
         private val slotSize = 26
         private val xSpacing = 3
-        private val ySpacing = 3
+        private val ySpacing = 2
         private val columns = 6
         private val chunks = slots.chunked(columns)
 

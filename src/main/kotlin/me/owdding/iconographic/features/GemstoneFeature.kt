@@ -180,7 +180,7 @@ data object GemstoneFeature : TooltipFeature() {
     data class GemstoneSlotsLine(val visualSlots: List<VisualGemstoneSlot>) : ExtractableTooltipLine {
         private val slotSize = 26
         private val xSpacing = 3
-        private val ySpacing = 3
+        private val ySpacing = 2
         private val columns = 6
         private val chunks = visualSlots.chunked(columns)
 
