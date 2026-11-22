@@ -276,6 +276,12 @@
           "@value": "Max Level Color",
           "desc": "The color of the background of the level when the enchantment is maxed."
         }
+      },
+      "farming": {
+        "toolLevelBar": {
+          "@value": "Farming Tool Level Bar",
+          "desc": "Replaces the hypixel level bar with a custom version, also displays overclockers applied."
+        }
       }
     },
     "keybind.toggle": "Toggle"
