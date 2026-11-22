@@ -34,7 +34,7 @@ import kotlin.math.roundToInt
 
 @RegisterFeature
 data object ToolLevelBar : TooltipFeature() {
-    val thingy by RemoteStrings.resolve().regex(".*(\\(.*?/.*?\\))")
+    val experienceLineRegex by RemoteStrings.resolve().regex(".*(\\(.*?/.*?\\))")
     private val YELLOW get() = ARGB.opaque(DisplayColor.YELLOW)
 
     override val enabled: Boolean get() = FarmingConfig.toolLevelBar
@@ -49,7 +49,7 @@ data object ToolLevelBar : TooltipFeature() {
         val requireUpgrade: Boolean
         val requireOverclock: Boolean
 
-        val xpSection = levelLine.replace(thingy, "$1").substringAfter('(').removeSuffix(")")
+        val xpSection = levelLine.replace(experienceLineRegex, "$1").substringAfter('(').removeSuffix(")")
         val split = xpSection.split("/")
         val [experience, required] = split.map { it.parseFormattedDouble() }
 
@@ -184,7 +184,7 @@ data object ToolLevelBar : TooltipFeature() {
                         isMax -> id("progress_bar/max")
                         requiresOverclock -> id("progress_bar/cyan")
                         requiresUpgrade -> id("progress_bar/red")
-                        else -> id("progress_bar")
+                        else -> id("progress_bar/bar")
                     },
                     x + 11,
                     y + 18,
