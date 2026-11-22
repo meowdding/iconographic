@@ -66,7 +66,7 @@ data object ToolLevelBar : TooltipFeature() {
             requireOverclock = false
         }
 
-        originalMerger.add(Meow(DataTypes.TOOL_LEVEL() ?: 1, experience, required, process, requireOverclock, requireUpgrade, max, DataTypes.TOOL_OVERCLOCKS() ?: 0))
+        originalMerger.add(FarmingToolLevelLine(DataTypes.TOOL_LEVEL() ?: 1, experience, required, process, requireOverclock, requireUpgrade, max, DataTypes.TOOL_OVERCLOCKS() ?: 0))
         Result.modified
     }
 
@@ -88,8 +88,16 @@ data object ToolLevelBar : TooltipFeature() {
         }
     }
 
-    data class Meow(val level: Int, val experience: Double, val needed: Double, val progress: Float, val requiresOverclock: Boolean, val requiresUpgrade: Boolean, val isMax: Boolean, val overclockAmount: Int) :
-        ExtractableTooltipLine {
+    data class FarmingToolLevelLine(
+        val level: Int,
+        val experience: Double,
+        val needed: Double,
+        val progress: Float,
+        val requiresOverclock: Boolean,
+        val requiresUpgrade: Boolean,
+        val isMax: Boolean,
+        val overclockAmount: Int,
+    ) : ExtractableTooltipLine {
 
         val titleComponent = Text.of {
             this.font = ChatUtils.mc5
