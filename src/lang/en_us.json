@@ -278,6 +278,7 @@
         }
       },
       "farming": {
+        "@value": "Farming Config",
         "toolLevelBar": {
           "@value": "Farming Tool Level Bar",
           "desc": "Replaces the hypixel level bar with a custom version, also displays overclockers applied."
