@@ -24,7 +24,7 @@ data object ItemAbility : TooltipFeature() {
     override val enabled: Boolean get() = MiscConfig.alignedItemAbility || MiscConfig.clickIcons != Style.OFF
     override val priority: Int = 20
 
-    private val abilityRegex by RemoteStrings.resolve().componentRegex("(?<name>.*Ability: .+?)\\s{2,}(?<key>[A-Z ]+ CLICK)")
+    private val abilityRegex by RemoteStrings.resolve().componentRegex("(?<name>.*Ability: .+?)\\s+(?<key>[A-Z ]+ CLICK)")
 
     override fun ItemStack.applies() = DataTypes.SKYBLOCK_ID() != null
 
@@ -81,7 +81,7 @@ data object ItemAbility : TooltipFeature() {
             val keyX = if (MiscConfig.alignedItemAbility) {
                 x + totalWidth - font.width(keyComponent)
             } else {
-                x + font.width(nameComponent) + font.width("  ")
+                x + font.width(nameComponent) + font.width(" ")
             }
 
             graphics.text(font, keyComponent, keyX, y, -1)
