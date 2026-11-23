@@ -41,4 +41,9 @@ val configPatches = buildList<(JsonObject) -> JsonObject> {
         if (misc.has("itemAbility")) misc.add("alignedItemAbility", misc.remove("itemAbility"))
         json
     }
+    add { json ->
+        val tags = json.getAsJsonObject("tags") ?: JsonObject()
+        if (tags.has("dungeonized")) tags.add("categoryModifier", tags.remove("dungeonized"))
+        json
+    }
 }

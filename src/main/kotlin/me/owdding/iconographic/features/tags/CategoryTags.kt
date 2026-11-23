@@ -11,6 +11,7 @@ import me.owdding.iconographic.utils.RemoteStrings
 import me.owdding.lib.utils.strings.StringGroup.Companion.resolve
 import net.minecraft.world.item.ItemStack
 import tech.thatgravyboat.skyblockapi.api.datatype.DataTypes
+import tech.thatgravyboat.skyblockapi.utils.extentions.toTitleCase
 import tech.thatgravyboat.skyblockapi.utils.regex.RegexUtils.match
 import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.stripped
 
@@ -31,7 +32,7 @@ data object CategoryTags : TooltipFeature() {
 
         val category = DataTypes.CATEGORY() ?: return emptyList()
 
-        if (!category.isDungeon && category.name.isEmpty()) return emptyList()
+        if (category.modifier != null && category.name.isEmpty()) return emptyList()
 
         return buildList {
             var name = category.name
@@ -44,12 +45,13 @@ data object CategoryTags : TooltipFeature() {
                 }
             }
 
+            if (TagConfig.categoryModifier && category.modifier != null) {
+                name = category.toString()
+            }
+
             add(TooltipTag.literal(name, 0xAAAAAA))
             if (shardId != null) {
                 add(TooltipTag.literal(shardId, 0xAAAAAA))
-            }
-            if (category.isDungeon && TagConfig.dungeonized) {
-                add(TooltipTag.literal("Dungeonized", 0xAAAAAA))
             }
         }
     }

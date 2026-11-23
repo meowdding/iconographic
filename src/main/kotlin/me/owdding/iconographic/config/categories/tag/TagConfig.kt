@@ -11,13 +11,13 @@ object TagConfig : CategoryKt("tags"), AutoTranslated {
     init { autoSeparator("general") }
     val rarity by autoBoolean(true)
     val category by autoBoolean(true)
+    val categoryModifier by autoBoolean(false)
     val stars by autoBoolean(true)
 
     init { autoSeparator("items") }
     val breakingPower by autoBoolean(true)
     val furniture by autoBoolean(true)
     val shardId by autoBoolean(true)
-    val dungeonized by autoBoolean(false)
 
     init { autoSeparator("pets") }
     val pet by autoBoolean(true)
