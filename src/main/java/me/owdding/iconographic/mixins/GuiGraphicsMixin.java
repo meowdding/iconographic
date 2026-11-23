@@ -29,7 +29,8 @@ import static tech.thatgravyboat.skyblockapi.utils.extentions.ItemStackExtension
 public class GuiGraphicsMixin {
 
     @ModifyVariable(
-        method = "setTooltipForNextFrameInternal*",
+        //~ if >= 26.3 'Z)V' -> 'ZZ)V'
+        method = "setTooltipForNextFrameInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;ZZ)V",
         at = @At("HEAD"),
         argsOnly = true
     )
