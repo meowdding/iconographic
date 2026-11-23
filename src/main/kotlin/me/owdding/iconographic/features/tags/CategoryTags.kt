@@ -16,7 +16,7 @@ import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.stripped
 
 @RegisterFeature
 data object CategoryTags : TooltipFeature() {
-    private val ignoredTopTags = listOf("Lava Rod", "Fishing Bait")
+    private val ignoredTopTags = listOf("Lava Rod", "Fishing Bait", "Combinable in Anvil")
     override val enabled: Boolean get() = TagConfig.category
     override val priority: Int = 0
 
