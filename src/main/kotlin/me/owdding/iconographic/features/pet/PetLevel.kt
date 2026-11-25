@@ -172,7 +172,7 @@ data object PetLevel : TooltipFeature() {
             graphics.scissor((x + 11)..(x + (totalWidth - 11) * progress).roundToInt(), (y - 20)..(y + 30)) {
                 graphics.blitSprite(
                     RenderPipelines.GUI_TEXTURED,
-                    if (this.isMaxed) id("progress_bar_max") else id("progress_bar"),
+                    if (this.isMaxed) id("progress_bar/max") else id("progress_bar/bar"),
                     x + 11,
                     y + 18,
                     totalWidth - 23,

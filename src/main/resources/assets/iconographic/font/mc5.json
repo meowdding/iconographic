@@ -37,6 +37,15 @@
       "ascent": 5
     },
     {
+      "type": "bitmap",
+      "chars": [
+        "!?"
+      ],
+      "file": "iconographic:font/mc5_punctuation.png",
+      "height": 5,
+      "ascent": 5
+    },
+    {
       "type": "space",
       "advances": {
         " ": 4,
