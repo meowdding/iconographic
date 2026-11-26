@@ -68,7 +68,7 @@ data object CategoryTags : TooltipFeature() {
             }
         }
 
-        if (!addUntilRarityLine(DataTypes.RARITY() ?: return@withComponentMerger Result.unmodified)) {
+        if (!addUntilRarityLine(DataTypes.RARITY() ?: return@withComponentMerger Result.unmodified, isUpgraded = DataTypes.RECOMBOBULATOR() ?: false)) {
             return@withComponentMerger Result.unmodified
         }
 

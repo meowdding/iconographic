@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.util.ARGB
 import tech.thatgravyboat.skyblockapi.api.data.SkyBlockRarity
 import tech.thatgravyboat.skyblockapi.utils.text.TextProperties.stripped
+import tech.thatgravyboat.skyblockapi.utils.text.TextUtils.substring
 import kotlin.math.floor
 
 @Suppress("UNCHECKED_CAST")
@@ -119,9 +120,13 @@ class ComponentLineListMerger(val originalMerger: ListMerger<TooltipLine>) : Lis
         skipNonComponents()
     }
 
-    fun addUntilRarityLine(rarity: SkyBlockRarity, includeRarity: Boolean = false): Boolean {
+    fun addUntilRarityLine(rarity: SkyBlockRarity, includeRarity: Boolean = false, isUpgraded: Boolean = false): Boolean {
         val name = rarity.displayName.uppercase()
-        val index = original.indexOfLast { it.stripped.contains(name) }
+        val index = original.indexOfLast { line ->
+            val stripped = line.stripped
+            val rarityLine = (if (isUpgraded && stripped.length > 4) stripped.substring(2, stripped.length - 2) else stripped).trim()
+            rarityLine.contains(name) && rarityLine.none(Char::isLowerCase)
+        }
         if (index == -1 || index < originalMerger.index) return false
         val limit = index + if (includeRarity) 1 else 0
         while (originalMerger.index < limit && originalMerger.canRead()) {
