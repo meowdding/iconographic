@@ -96,6 +96,10 @@
           "@value": "Category",
           "desc": "Adds the item's category as tag."
         },
+        "categoryModifier": {
+          "@value": "Category Modifier",
+          "desc": "Adds the item's category modifier into the category line, e.g.: \"Dungeon\", \"Slayer\""
+        },
         "stars": {
           "@value": "Stars",
           "desc": "Adds the item's stars to the tags."
@@ -115,10 +119,6 @@
         "shardId": {
           "@value": "Shard ID",
           "desc": "Adds a separate tag for a Shard's ID."
-        },
-        "dungeonized": {
-          "@value": "Dungeonized Tag",
-          "desc": "Adds a separate tag if an Item is dungeonized."
         },
         "pets": {
           "@value": "Pet Specific Tags",
