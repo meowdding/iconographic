@@ -24,7 +24,8 @@
     "minecraft": "${minecraft_range}",
     "fabric-api": "*",
     "fabric-language-kotlin": ">=${fabric_lang_kotlin}",
-    "skyblock-api": ">=${sbapi}"
+    "skyblock-api": ">=${sbapi}",
+    "meowdding-lib": ">=${mlib}"
   },
   "breaks": {
     "iceberg": "*"

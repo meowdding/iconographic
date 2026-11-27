@@ -1,6 +1,3 @@
-import jdk.jfr.internal.JVM.exclude
-import jdk.jfr.internal.JVM.include
-import org.gradle.declarative.dsl.schema.FqName.Empty.packageName
 import java.io.ByteArrayOutputStream
 
 plugins {
@@ -98,6 +95,7 @@ tasks.processResources {
         "minecraft_range" to range,
         "fabric_lang_kotlin" to versionedCatalog.versions["fabric.language.kotlin"],
         "sbapi" to versionedCatalog.versions["skyblockapi"],
+        "mlib" to versionedCatalog.versions["meowdding.lib"],
         "rconfigkt" to versionedCatalog.versions["resourceful.config.kotlin"],
         "rconfig" to versionedCatalog.versions["resourceful.config"],
     )
