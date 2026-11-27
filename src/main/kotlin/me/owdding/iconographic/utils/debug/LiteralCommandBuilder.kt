@@ -24,7 +24,7 @@ typealias ArgumentCommandBuilder<T> = IconCommandBuilder<RequiredArgumentBuilder
 class RegisterIconCommandEvent(
     val dispatcher: CommandDispatcher<FabricClientCommandSource>,
     val context: CommandBuildContext,
-) : AbstractModRegisterCommandsEvent(RegisterCommandsEvent(dispatcher), "iconographic") {
+) : AbstractModRegisterCommandsEvent(RegisterCommandsEvent(dispatcher, context), "iconographic") {
     private val prefixes = listOf("iconographic", "ttt")
 
     fun register(command: LiteralArgumentBuilder<FabricClientCommandSource>) = prefixes.forEach {
