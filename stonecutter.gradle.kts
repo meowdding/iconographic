@@ -1,6 +1,6 @@
 plugins {
     id("dev.kikugie.stonecutter")
-    id("fabric-loom") version "1.14-SNAPSHOT" apply false
+    id("fabric-loom") version "1.19-SNAPSHOT" apply false
 }
 
 @Suppress("UNCHECKED_CAST")
